@@ -21,7 +21,10 @@ def call_groq(prompt):
     response = requests.post(url, json=data, headers=headers)
     if response.status_code != 200:
         return f"API Error: {response.text}"
-    return response.json()["choices"][0]["message"]["content"]
+    result = response.json()["choices"][0]["message"]["content"]
+    if not result:
+        return "API returned empty response. Please try again."
+    return result
 
 # ---------------- AI PROMPT ENGINE ----------------
 
