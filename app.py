@@ -80,7 +80,13 @@ STRICT RULES:
 - Maximum 3 execution steps only
 - NO acting scenes, NO fake emotions, NO props
 - Show RESULT first, explain later
-- Hook must create curiosity OR shock OR show a result instantly
+- Hook must use ONE of these emotions:
+  * "you're behind" (FOMO)
+  * "you're wasting time" (urgency)  
+  * "no one tells you this" (secret)
+  * "I stopped doing X and this happened" (surprise)
+- Never state facts. Always trigger emotion.
+- Make viewer feel: "I'm missing out if I don't try this"
 - Avoid hooks that sound like complaints or rants
 - Talk directly to {name} throughout
 - Be decisive. Be a drill sergeant. Not a consultant.
