@@ -26,22 +26,12 @@ def call_groq(prompt):
 # ---------------- AI PROMPT ENGINE ----------------
 
 def get_ai_suggestions(name, followers, engagement, niche, content_style, challenge, target_audience, about, feedback=""):
-    feedback_text = f"\nUSER FEEDBACK TO FIX:\n{feedback}\nGenerate completely different ideas addressing this concern.\n" if feedback else ""
+    feedback_text = f"\nUSER FEEDBACK:\n{feedback}\nGenerate a completely different idea addressing this concern.\n" if feedback else ""
 
     prompt = f"""
-You are a STRICT viral content engineering system.
-
-Your job is NOT creativity.
-Your job is to DESIGN HIGH-PERFORMANCE SOCIAL MEDIA VIDEOS.
-
-You think like:
-- YouTube Shorts algorithm engineer
-- TikTok retention optimizer
-- Instagram Reels growth strategist
-
-Your ONLY goal: maximize FOLLOWERS + WATCH TIME + SHARES for {name}.
-
----
+You are a viral content drill sergeant.
+You don't give options. You give orders.
+Your job is to tell {name} exactly what to post — one video, one decision, one action.
 
 USER DATA:
 Name: {name}
@@ -53,74 +43,41 @@ Target Audience: {target_audience}
 Followers: {followers}
 Engagement: {engagement}%
 
----
+OUTPUT FORMAT (STRICT — NO CHANGES):
 
-RULES:
-- EXACTLY 3 ideas only
-- SAME FORMAT for all ideas
-- NO fluff, NO storytelling, NO motivation
-- Every step MUST include 1 real-world example in simple language
-- If using technical terms, explain them in brackets
-- Keep timing strict: 0-2s, 0-5s, 5-15s, 15-20s
-- Each idea uses a different viral trigger:
-  1. Shock
-  2. Curiosity
-  3. Value
-- Assume creator is a beginner — make every step crystal clear
+{name}'s problem: [one brutal diagnosis in simple language]
 
-{feedback_text}
+YOUR BEST POST (POST THIS TOMORROW):
+Platform: [exact platform]
+Best time: [exact time]
 
----
-
-FORMAT (DO NOT CHANGE):
-
-{name}, your problem is [1 precise growth diagnosis].
-
----
-
-Idea 1:
-Title:
-Platform:
-Duration: 20 sec
-
-Hook (0-2s):
-Visual: [exact shot description, e.g. "close up of your face looking shocked"]
-Line: [exact words to say]
-Example: [real example of this hook working]
+Hook (0-2 sec):
+"[exact words to say]"
+[exact visual — phone recordable, no equipment needed]
 
 Execution:
-0-5s:
-Action: [exact action]
-Example: [real world example]
+0-3 sec: [exact action]
+3-10 sec: [exact action]
+10-18 sec: [exact action]
+18-20 sec: [exact CTA words]
 
-5-15s:
-Action: [exact action]
-Example: [real world example]
+Why this will work: [one line]
 
-15-20s:
-Action: [exact action]
-Example: [real world example]
+What to avoid: [2-3 things killing their reach right now]
 
-CTA: [exact words]
-Why it works: [one line]
+One rule to follow for every video: [one simple rule]
 
----
+Come back after posting — I'll fix your next video.
 
-Idea 2:
-(SAME FORMAT)
+STRICT RULES:
+- ONE idea only. Not three.
+- No long explanations
+- Every step must be doable with just a phone
+- No technical terms without simple explanation in brackets
+- Talk directly to {name} throughout
+- Be decisive. Be a drill sergeant. Not a consultant.
 
----
-
-Idea 3:
-(SAME FORMAT)
-
----
-
-FINAL CHECK:
-- 3 ideas only
-- no extra text
-- strict format compliance
-- every technical term explained in simple language
+{feedback_text}
 """
     return call_groq(prompt)
 
@@ -129,24 +86,24 @@ FINAL CHECK:
 def score_post(name, post_idea, followers):
     prompt = f"""
 You are a strict viral content analyst.
-
-Evaluate this post idea:
+Be direct and decisive. No fluff.
 
 Creator: {name}
 Followers: {followers}
 
-Post:
+Post idea:
 {post_idea}
 
-Return EXACT format:
+OUTPUT FORMAT (STRICT):
 
 Hook Score: /100
 Shareability: /100
 Trend Match: /100
 Audience Fit: /100
 
-Weakness:
-Fix:
+Biggest weakness: [one line]
+Fix it: [one specific action]
+Verdict: [Post it / Don't post it / Fix this first]
 """
     return call_groq(prompt)
 
@@ -204,7 +161,7 @@ if target_audience == "Other":
 analyze = st.sidebar.button("Analyze Profile")
 
 st.sidebar.subheader("🎯 Post Scoring")
-post_idea = st.sidebar.text_area("Enter Post Idea")
+post_idea = st.sidebar.text_area("Describe your post idea")
 score_btn = st.sidebar.button("Score Idea")
 
 # ---------------- LOGIC ----------------
@@ -237,41 +194,4 @@ if "result" in st.session_state:
             elif engagement > 4:
                 st.info("Good! Above average 👍")
             else:
-                st.warning("Needs improvement. Let's fix this!")
-        elif followers < 10000:
-            if engagement > 5:
-                st.success("Excellent! Top tier 🔥")
-            elif engagement > 2:
-                st.info("Good! Above average 👍")
-            else:
-                st.warning("Needs improvement. Let's fix this!")
-        else:
-            if engagement > 3:
-                st.success("Excellent! Top tier 🔥")
-            elif engagement > 1:
-                st.info("Good! Above average 👍")
-            else:
-                st.warning("Needs improvement. Let's fix this!")
-
-    st.subheader("🔥 Viral Content Strategy")
-    st.write(st.session_state.result)
-
-    st.subheader("💬 Not happy with these ideas?")
-    feedback = st.text_input("Tell us why and we'll generate better ones")
-    regenerate = st.button("Regenerate Ideas")
-
-    if regenerate and feedback:
-        with st.spinner("Generating better ideas..."):
-            st.session_state.result = get_ai_suggestions(
-                name, followers, engagement,
-                niche, content_style,
-                challenge, target_audience,
-                about, feedback
-            )
-        st.rerun()
-
-if score_btn and post_idea:
-    with st.spinner("Scoring idea..."):
-        result = score_post(name, post_idea, followers)
-    st.subheader("📊 Score Report")
-    st.write(result)
+                st.war
