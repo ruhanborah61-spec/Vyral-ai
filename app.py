@@ -182,7 +182,6 @@ if analyze:
                 challenge, target_audience,
                 about
             )
-        st.write("DEBUG:", st.session_state.result)
 
 if "result" in st.session_state:
     engagement = st.session_state.engagement
