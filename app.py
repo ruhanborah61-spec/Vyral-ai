@@ -15,7 +15,7 @@ def call_groq(prompt):
         "Content-Type": "application/json"
     }
     data = {
-        "model": "llama-3.1-8b-instant",
+        "model": "llama-3.3-70b-versatile",
         "messages": [{"role": "user", "content": prompt}]
     }
     response = requests.post(url, json=data, headers=headers)
