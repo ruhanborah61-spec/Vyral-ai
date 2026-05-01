@@ -198,4 +198,35 @@ if "result" in st.session_state:
             elif engagement > 4:
                 st.info("Good! Above average 👍")
             else:
-                st.war
+                st.warning("Needs improvement. Let's fix this!")
+        elif followers < 10000:
+            if engagement > 5:
+                st.success("Excellent! Top tier 🔥")
+            elif engagement > 2:
+                st.info("Good! Above average 👍")
+            else:
+                st.warning("Needs improvement. Let's fix this!")
+        else:
+            if engagement > 3:
+                st.success("Excellent! Top tier 🔥")
+            elif engagement > 1:
+                st.info("Good! Above average 👍")
+            else:
+                st.warning("Needs improvement. Let's fix this!")
+
+    st.subheader("🔥 Your Viral Content Strategy")
+    st.write(st.session_state.result)
+
+    st.subheader("💬 Not happy with this idea?")
+    feedback = st.text_input("Tell us why and we'll generate a better one")
+    regenerate = st.button("Regenerate Idea")
+
+    if regenerate and feedback:
+        with st.spinner("Generating better idea..."):
+            st.session_state.result = get_ai_suggestions(
+                name, followers, engagement,
+                niche, content_style,
+                challenge, target_audience,
+                about, feedback
+            )
+        st.rerun()
