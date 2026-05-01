@@ -77,6 +77,11 @@ STRICT RULES:
 - No long explanations
 - Every step must be doable with just a phone
 - No technical terms without simple explanation in brackets
+- Maximum 3 execution steps only
+- NO acting scenes, NO fake emotions, NO props
+- Show RESULT first, explain later
+- Hook must create curiosity OR shock OR show a result instantly
+- Avoid hooks that sound like complaints or rants
 - Talk directly to {name} throughout
 - Be decisive. Be a drill sergeant. Not a consultant.
 
