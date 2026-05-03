@@ -58,6 +58,9 @@ GAMING RULES:
 - NEVER delay the strongest visual — show contrast or proof in first 2 seconds
 - Hook must show CONTRAST or IMPOSSIBILITY — not narration
 - Use believable numbers with clear before/after
+- Visual must always be from INSIDE the game — scoreboard, rank screen, kill feed
+- NEVER suggest engagement graphs, analytics tools, or external apps as visuals
+- Example visual: "Fast zoom on Valorant rank screen" or "Split screen of kill counts"
 - Every idea MUST include split screen or side by side comparison
 - Content must be phone recordable only
 - NEVER use "link in bio" as CTA
