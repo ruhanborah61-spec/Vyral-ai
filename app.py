@@ -55,6 +55,7 @@ Challenge: {challenge}
 Target Audience: {target_audience}
 Followers: {followers}
 Engagement: {engagement}%
+Preferred Platform: {platform}
 
 OUTPUT FORMAT (STRICT — NO CHANGES):
 
@@ -83,6 +84,8 @@ One rule to follow for every video: [one simple rule]
 Come back after posting — I'll fix your next video.
 
 STRICT RULES:
+Platform preference: {platform}
+Suggest content specifically optimized for {platform} algorithm.
 - ONE idea only. Not three.
 - No long explanations
 - Every step must be doable with just a phone
@@ -149,6 +152,12 @@ st.markdown("""
 st.sidebar.header("Creator Profile")
 
 name = st.sidebar.text_input("Name")
+platform=platform = st.sidebar.selectbox("Where do you post?", [
+    "Instagram Reels",
+    "YouTube Shorts",
+    "TikTok",
+    "All platforms"
+])
 followers = st.sidebar.number_input("Followers", min_value=0)
 likes = st.sidebar.number_input("Avg Likes", min_value=0)
 about = st.sidebar.text_area("About You", placeholder="e.g. I'm a 17 year old from Assam building an AI startup while learning to code...")
@@ -199,7 +208,7 @@ if analyze:
         with st.spinner("Analyzing viral potential..."):
             st.session_state.result = get_ai_suggestions(
                 name, followers, engagement,
-                niche, content_style,
+                niche,platform, content_style,
                 challenge, target_audience,
                 about
             )
@@ -244,7 +253,7 @@ if "result" in st.session_state:
     if regenerate and feedback:
         with st.spinner("Generating better idea..."):
             st.session_state.result = get_ai_suggestions(
-                name, followers, engagement,
+                name, followers,platform, engagement,
                 niche, content_style,
                 challenge, target_audience,
                 about, feedback
