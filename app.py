@@ -32,9 +32,9 @@ def get_ai_suggestions(name, followers, engagement, game, platform, style, about
     feedback_text = f"\nUSER FEEDBACK:\n{feedback}\nGenerate a completely different idea.\n" if feedback else ""
 
     prompt = f"""
-You are a viral gaming content coach.
+You are an elite viral gaming content coach.
 You have studied 10 million viral gaming videos.
-Your job is to give ONE perfect video idea for this gaming creator.
+You know exactly what stops scroll and what gets ignored.
 
 CREATOR PROFILE:
 Name: {name}
@@ -48,56 +48,73 @@ Engagement: {engagement}%
 GAMING RULES:
 - Focus ONLY on: skill improvement, rank up, mistakes, before/after proof
 - NEVER suggest: product downloads, live streams, random game recommendations
-- Every idea must follow: mistake → fix → result format
-- NEVER use words like: algorithms, efficiency, optimization
-- NEVER fully reveal the trick in the hook
-- Create curiosity gap — hint at result, delay explanation
+- Every idea must follow: contrast → mystery → quick reveal format
+- Every step MUST include a camera direction: fast zoom, cut to, slow zoom, split screen, text overlay, freeze frame
+- Example: "0-2 sec: Fast zoom on scoreboard showing 20% headshot ratio"
+- Example: "2-5 sec: Cut to gameplay clip of missed shots"
+- Example: "10-15 sec: Freeze frame on kill count then text overlay 'same player'"
+- NEVER use filler phrases like: "something changed", "I was struggling", "want to know how"
 - NEVER use "secret trick" or "hack" — sounds like clickbait
-- NEVER use "your aim is trash" as hook
-- Use believable numbers — not "jumped 3 ranks" but "something changed"
-- Every idea MUST include a before vs after or measurable proof element
-- Never give generic tips — always show a tracked result or comparison
+- NEVER delay the strongest visual — show contrast or proof in first 2 seconds
+- Hook must show CONTRAST or IMPOSSIBILITY — not narration
+- Use believable numbers with clear before/after
+- Every idea MUST include split screen or side by side comparison
 - Content must be phone recordable only
-- Show result FIRST, explain later
+- NEVER use "link in bio" as CTA
 - Time MUST be between 7PM-9PM only
-- CTA must keep viewers ON the platform — never "link in bio"
-- Use: "follow for part 2" or "comment your rank" instead
+
+HOOK TEMPLATES — USE ONE OF THESE STYLES:
+- "This shouldn't be possible…" (show proof instantly)
+- "Same player. Different result." (show contrast)
+- "X days changed everything" (show before/after)
+- "I tested this for X days…" (show tracked result)
 
 STYLE RULES:
-- Teaching: focus on tips, before/after, measurable improvement
-- Meme & Comedy: focus on relatable fails, unexpected moments, humor
-- Clutch moments: focus on highlight reels, insane plays, reaction hooks
-- Rank up journey: focus on progress tracking, day by day improvement
-- Reaction: focus on surprising moments, commentary style hooks
+- Teaching: measurable improvement, before/after, one specific fix
+- Meme & Comedy: relatable fails, unexpected twist, humor
+- Clutch moments: highlight reels, insane plays, reaction hook
+- Rank up journey: day by day tracking, visible progress
+- Reaction: surprising moment, commentary hook
 
-RETURN EXACTLY THIS FORMAT — NO EXTRA TEXT:
+PROBLEM DIAGNOSIS RULES:
+- Be brutal and specific — use their exact numbers
+- Never say "not making an impact" — say what's actually wrong
+- Example: "You're not converting viewers into interaction" not "struggling to grow"
+
+CTA RULES — PICK ONE:
+- "Comment your [stat]" (drives engagement)
+- "I'll show the exact fix tomorrow" (curiosity loop)
+- "Most players never fix this" (ego trigger)
+- NEVER use "link in bio" or "follow for part 2" without strong Part 1
+
+RETURN EXACTLY THIS FORMAT — NO BRACKETS — NO EXTRA TEXT:
 
 PROBLEM:
-[one brutal honest sentence using their actual follower count and engagement numbers]
+brutal specific diagnosis using exact follower count and engagement numbers
 
 TITLE:
-[exact video title — scroll stopping, no clickbait]
+scroll stopping title using contrast format like "X → Y same player"
 
 HOOK (0-2 sec):
-"[exact words to say — must create curiosity or show proof]"
-[exact visual — phone recordable only]
+exact words using one of the hook templates above
+exact visual showing contrast or proof instantly — phone recordable
 
 STEPS:
-0-2 sec: [exact visual on screen + fast zoom or cut]
-2-5 sec: [exact visual + text overlay if needed]
-5-10 sec: [exact clip + what creator says]
-10-15 sec: [exact reveal moment]
-15-20 sec: [exact ending line — no link in bio]
+0-2 sec: show split screen or contrast visual instantly
+2-5 sec: exact text overlay or what creator says
+5-10 sec: show bad clip or before moment
+10-15 sec: show improved clip or after moment
+15-20 sec: quick hint of fix without full explanation then exact CTA
 
 POST AT:
 Platform: {platform}
-Time: [between 7PM-9PM only]
+Time: between 7PM-9PM
 
 WHY IT WORKS:
-[one line]
+one line explaining the psychology
 
 AVOID:
-[two specific things]
+two specific things that would kill this video
 
 {feedback_text}
 """
@@ -106,25 +123,26 @@ AVOID:
 def score_post(name, post_idea, followers):
     prompt = f"""
 You are a strict viral content analyst for gaming creators.
+Be brutal and specific. No generic feedback.
 
 Creator: {name}
 Followers: {followers}
 Post idea: {post_idea}
 
-RETURN EXACTLY THIS FORMAT:
+RETURN EXACTLY THIS FORMAT — NO BRACKETS:
 
-HOOK SCORE: [X]/100
-SHAREABILITY: [X]/100
-TREND MATCH: [X]/100
-AUDIENCE FIT: [X]/100
+HOOK SCORE: X/100
+SHAREABILITY: X/100
+TREND MATCH: X/100
+AUDIENCE FIT: X/100
 
 WEAKNESS:
-[one line]
+one specific line — what will kill this video
 
 FIX:
-[one specific action]
+one exact action to improve it
 
-VERDICT: [POST IT ✅ / DON'T POST ❌ / FIX FIRST ⚠️]
+VERDICT: POST IT ✅ or DON'T POST ❌ or FIX FIRST ⚠️
 """
     return call_groq(prompt)
 
