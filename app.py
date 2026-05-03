@@ -15,7 +15,7 @@ def call_groq(prompt):
         "Content-Type": "application/json"
     }
     data = {
-        "model": "llama-3.3-70b-versatile",
+        "model": "qwen-qwq-32b",
         "messages": [{"role": "user", "content": prompt}]
     }
     response = requests.post(url, json=data, headers=headers)
@@ -29,95 +29,77 @@ def call_groq(prompt):
 # ---------------- AI FUNCTIONS ----------------
 
 def get_ai_suggestions(name, followers, engagement, game, platform, style, about, feedback=""):
-    feedback_text = f"\nUSER FEEDBACK:\n{feedback}\nGenerate a completely different idea.\n" if feedback else ""
+    feedback_text = f"\nUSER FEEDBACK: {feedback}\nGenerate a completely different idea that fixes this.\n" if feedback else ""
 
     prompt = f"""
-You are an elite viral gaming content coach.
-You have studied 10 million viral gaming videos.
-You know exactly what stops scroll and what gets ignored.
+You are a viral gaming content coach who has studied 10 million viral gaming videos.
 
-CREATOR PROFILE:
+THIS CREATOR MAKES GAMING VIDEOS ABOUT {game}.
+Their content is ONLY about gameplay — kills, ranks, aim, strategies.
+NOT about social media growth or analytics.
+ALL visuals must come from INSIDE the game.
+
+CREATOR:
 Name: {name}
 Game: {game}
 Platform: {platform}
-Content Style: {style}
+Style: {style}
 About: {about}
 Followers: {followers}
 Engagement: {engagement}%
 
-GAMING RULES:
-- Focus ONLY on: skill improvement, rank up, mistakes, before/after proof
-- NEVER suggest: product downloads, live streams, random game recommendations
-- Every idea must follow: contrast → mystery → quick reveal format
-- Every step MUST include a camera direction: fast zoom, cut to, slow zoom, split screen, text overlay, freeze frame
-- Example: "0-2 sec: Fast zoom on scoreboard showing 20% headshot ratio"
-- Example: "2-5 sec: Cut to gameplay clip of missed shots"
-- Example: "10-15 sec: Freeze frame on kill count then text overlay 'same player'"
-- NEVER use filler phrases like: "something changed", "I was struggling", "want to know how"
-- NEVER use "secret trick" or "hack" — sounds like clickbait
-- NEVER delay the strongest visual — show contrast or proof in first 2 seconds
-- Hook must show CONTRAST or IMPOSSIBILITY — not narration
-- Use believable numbers with clear before/after
-- Visual must always be from INSIDE the game — scoreboard, rank screen, kill feed
-- NEVER suggest engagement graphs, analytics tools, or external apps as visuals
-- Example visual: "Fast zoom on Valorant rank screen" or "Split screen of kill counts"
-- Every idea MUST include split screen or side by side comparison
-- Content must be phone recordable only
-- NEVER use "link in bio" as CTA
-- Time MUST be between 7PM-9PM only
+YOUR JOB:
+Give ONE video idea that will get maximum views on {platform}.
+The idea must be simple enough for a beginner creator to film with just their phone.
 
-HOOK TEMPLATES — USE ONE OF THESE STYLES:
-- "This shouldn't be possible…" (show proof instantly)
-- "Same player. Different result." (show contrast)
-- "X days changed everything" (show before/after)
-- "I tested this for X days…" (show tracked result)
+RULES:
+1. Show contrast or proof in the FIRST 2 seconds — never delay
+2. Hook must use ONE of: "This shouldn't be possible", "Same player. Different result.", "X days changed everything", "I tested this for X days"
+3. NEVER use: "secret trick", "hack", "link in bio", "something changed", "I was struggling"
+4. Every step must have a camera direction: fast zoom, cut to, text overlay, split screen, freeze frame
+5. Before/after comparison is MANDATORY
+6. CTA must be: "Comment your rank" or "Most players miss this" — never "follow for part 2"
+7. Time must be between 7PM and 9PM
+8. All visuals must be from inside {game} — scoreboard, rank screen, kill feed, gameplay footage
+9. NEVER suggest analytics graphs, engagement metrics, or social media tools as visuals
+10. Keep steps simple — one action per step
 
-STYLE RULES:
-- Teaching: measurable improvement, before/after, one specific fix
-- Meme & Comedy: relatable fails, unexpected twist, humor
-- Clutch moments: highlight reels, insane plays, reaction hook
-- Rank up journey: day by day tracking, visible progress
-- Reaction: surprising moment, commentary hook
-
-PROBLEM DIAGNOSIS RULES:
-- Be brutal and specific — use their exact numbers
-- Never say "not making an impact" — say what's actually wrong
-- Example: "You're not converting viewers into interaction" not "struggling to grow"
-
-CTA RULES — PICK ONE:
-- "Comment your [stat]" (drives engagement)
-- "I'll show the exact fix tomorrow" (curiosity loop)
-- "Most players never fix this" (ego trigger)
-- NEVER use "link in bio" or "follow for part 2" without strong Part 1
-
-RETURN EXACTLY THIS FORMAT — NO BRACKETS — NO EXTRA TEXT:
+RETURN EXACTLY THIS — NO EXTRA TEXT:
 
 PROBLEM:
-brutal specific diagnosis using exact follower count and engagement numbers
+[Write one sentence using {name}'s exact numbers — be brutal and specific about what's holding them back]
 
 TITLE:
-scroll stopping title using contrast format like "X → Y same player"
+[Write a scroll-stopping title using contrast — example: "Silver → Gold. Same player. 7 days."]
 
-HOOK (0-2 sec):
-exact words using one of the hook templates above
-exact visual showing contrast or proof instantly — phone recordable
+HOOK:
+[Write exact words to say in first 2 seconds]
+[Write exact visual from inside the game — example: "Fast zoom on rank screen showing Silver"]
 
-STEPS:
-0-2 sec: show split screen or contrast visual instantly
-2-5 sec: exact text overlay or what creator says
-5-10 sec: show bad clip or before moment
-10-15 sec: show improved clip or after moment
-15-20 sec: quick hint of fix without full explanation then exact CTA
+STEP 1 (0-2 sec):
+[Camera direction + exact action — example: "Fast zoom on scoreboard showing 8 kills"]
 
-POST AT:
+STEP 2 (2-5 sec):
+[Camera direction + exact action — example: "Cut to text overlay: Day 1 vs Day 7"]
+
+STEP 3 (5-10 sec):
+[Camera direction + exact action — example: "Cut to bad gameplay clip — missed shots"]
+
+STEP 4 (10-15 sec):
+[Camera direction + exact action — example: "Cut to improved gameplay clip — clean headshots"]
+
+STEP 5 (15-20 sec):
+[Camera direction + exact ending line + CTA]
+
+POST TIME:
 Platform: {platform}
-Time: between 7PM-9PM
+Time: [between 7PM-9PM]
 
 WHY IT WORKS:
-one line explaining the psychology
+[One simple sentence]
 
 AVOID:
-two specific things that would kill this video
+[Two specific things that would kill this video]
 
 {feedback_text}
 """
@@ -125,26 +107,22 @@ two specific things that would kill this video
 
 def score_post(name, post_idea, followers):
     prompt = f"""
-You are a strict viral content analyst for gaming creators.
-Be brutal and specific. No generic feedback.
+You are a strict viral content analyst for gaming videos.
+Be direct. No generic feedback.
 
 Creator: {name}
 Followers: {followers}
 Post idea: {post_idea}
 
-RETURN EXACTLY THIS FORMAT — NO BRACKETS:
+RETURN EXACTLY THIS:
 
 HOOK SCORE: X/100
 SHAREABILITY: X/100
 TREND MATCH: X/100
 AUDIENCE FIT: X/100
 
-WEAKNESS:
-one specific line — what will kill this video
-
-FIX:
-one exact action to improve it
-
+WEAKNESS: [one specific line]
+FIX: [one exact action]
 VERDICT: POST IT ✅ or DON'T POST ❌ or FIX FIRST ⚠️
 """
     return call_groq(prompt)
@@ -154,8 +132,12 @@ def parse_sections(text):
         "PROBLEM": "",
         "TITLE": "",
         "HOOK": "",
-        "STEPS": "",
-        "POST AT": "",
+        "STEP 1": "",
+        "STEP 2": "",
+        "STEP 3": "",
+        "STEP 4": "",
+        "STEP 5": "",
+        "POST TIME": "",
         "WHY IT WORKS": "",
         "AVOID": ""
     }
@@ -163,6 +145,8 @@ def parse_sections(text):
     lines = text.split('\n')
     for line in lines:
         line = line.strip()
+        if not line:
+            continue
         matched = False
         for key in sections:
             if line.startswith(key + ":") or line == key + ":":
@@ -186,7 +170,7 @@ st.set_page_config(page_title="Vyral", page_icon="🎮")
 st.title("Vyral 🎮")
 st.write("AI content coach for gaming creators")
 
-st.info("👋 Enter your details in the sidebar and click **Analyze** to get your personalized content strategy!")
+st.info("👋 Fill in your details in the sidebar and click **Analyze** to get your video strategy!")
 
 # SIDEBAR
 st.sidebar.header("Your Profile")
@@ -291,13 +275,17 @@ if "result" in st.session_state:
         st.subheader("🔥 Hook (0-2 sec)")
         st.warning(sections["HOOK"])
 
-    if sections["STEPS"]:
+    steps_exist = any(sections[f"STEP {i}"] for i in range(1, 6))
+    if steps_exist:
         st.subheader("📋 Execution Steps")
-        st.code(sections["STEPS"])
+        for i in range(1, 6):
+            step = sections[f"STEP {i}"]
+            if step:
+                st.markdown(f"**Step {i}:** {step}")
 
-    if sections["POST AT"]:
+    if sections["POST TIME"]:
         st.subheader("🕐 When to Post")
-        st.success(sections["POST AT"])
+        st.success(sections["POST TIME"])
 
     if sections["WHY IT WORKS"]:
         st.subheader("💡 Why It Works")
@@ -327,11 +315,12 @@ if score_btn and post_idea:
         score_result = score_post(name, post_idea, followers)
     st.divider()
     st.subheader("📊 Post Score Report")
-
     lines = score_result.split('\n')
     for line in lines:
-        if 'SCORE:' in line or 'SHAREABILITY:' in line or 'TREND' in line or 'AUDIENCE' in line:
-            st.metric(line.split(':')[0].strip(), line.split(':')[1].strip() if ':' in line else "")
+        if any(x in line for x in ['HOOK SCORE', 'SHAREABILITY', 'TREND MATCH', 'AUDIENCE FIT']):
+            parts = line.split(':')
+            if len(parts) == 2:
+                st.metric(parts[0].strip(), parts[1].strip())
         elif 'VERDICT' in line:
             st.subheader(line)
         elif line.strip():
