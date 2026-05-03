@@ -28,7 +28,7 @@ def call_groq(prompt):
 
 # ---------------- AI FUNCTIONS ----------------
 
-def get_ai_suggestions(name, followers, engagement, game, platform, about, feedback=""):
+def get_ai_suggestions(name, followers, engagement, game, platform, style, about, feedback=""):
     feedback_text = f"\nUSER FEEDBACK:\n{feedback}\nGenerate a completely different idea.\n" if feedback else ""
 
     prompt = f"""
@@ -40,42 +40,49 @@ CREATOR PROFILE:
 Name: {name}
 Game: {game}
 Platform: {platform}
+Content Style: {style}
 About: {about}
 Followers: {followers}
 Engagement: {engagement}%
 
 GAMING RULES:
 - Focus ONLY on: skill improvement, rank up, mistakes, before/after proof
-- Hook must hit: ego (your aim is trash), curiosity (secret trick), or proof (before/after)
 - NEVER suggest: product downloads, live streams, random game recommendations
 - Every idea must follow: mistake → fix → result format
 - NEVER use words like: algorithms, efficiency, optimization
 - NEVER fully reveal the trick in the hook
 - Create curiosity gap — hint at result, delay explanation
 - NEVER use "secret trick" or "hack" — sounds like clickbait
-- Use believable numbers — not "jumped 3 ranks" but "something changed in my rank"
-- ALWAYS use: time saved, shortcut, faster result, easier way
+- NEVER use "your aim is trash" as hook
+- Use believable numbers — not "jumped 3 ranks" but "something changed"
 - Every idea MUST include a before vs after or measurable proof element
 - Never give generic tips — always show a tracked result or comparison
-- Hook must NOT use "your aim is trash" — use curiosity or tracking instead
 - Content must be phone recordable only
 - Show result FIRST, explain later
+- Time MUST be between 7PM-9PM only
+
+STYLE RULES:
+- Teaching: focus on tips, before/after, measurable improvement
+- Meme & Comedy: focus on relatable fails, unexpected moments, humor
+- Clutch moments: focus on highlight reels, insane plays, reaction hooks
+- Rank up journey: focus on progress tracking, day by day improvement
+- Reaction: focus on surprising moments, commentary style hooks
 
 RETURN EXACTLY THIS FORMAT — NO EXTRA TEXT:
 
 PROBLEM:
-[one brutal honest sentence using their actual numbers]
+[one brutal honest sentence using their actual follower count and engagement numbers]
 
 TITLE:
-[exact video title — scroll stopping]
+[exact video title — scroll stopping, no clickbait]
 
 HOOK (0-2 sec):
-"[exact words to say]"
-[exact visual — phone recordable]
+"[exact words to say — must create curiosity or show proof]"
+[exact visual — phone recordable only]
 
 STEPS:
 0-3 sec: [exact action]
-3-8 sec: [exact action]  
+3-8 sec: [exact action]
 8-15 sec: [exact action]
 15-20 sec: [exact CTA]
 
@@ -104,7 +111,7 @@ Post idea: {post_idea}
 RETURN EXACTLY THIS FORMAT:
 
 HOOK SCORE: [X]/100
-SHAREABILITY: [X]/100  
+SHAREABILITY: [X]/100
 TREND MATCH: [X]/100
 AUDIENCE FIT: [X]/100
 
@@ -175,6 +182,17 @@ platform = st.sidebar.selectbox("Where do you post?", [
     "YouTube Shorts", "Instagram Reels", "TikTok"
 ])
 
+style = st.sidebar.selectbox("Your content style", [
+    "Teaching (tips & tricks)",
+    "Meme & Comedy",
+    "Clutch moments & highlights",
+    "Rank up journey",
+    "Reaction & commentary",
+    "Other"
+])
+if style == "Other":
+    style = st.sidebar.text_input("Describe your style")
+
 about = st.sidebar.text_area("About you (optional)",
     placeholder="e.g. Silver ranked Valorant player trying to reach Platinum...")
 
@@ -199,14 +217,13 @@ if analyze:
         with st.spinner("Analyzing your profile..."):
             st.session_state.result = get_ai_suggestions(
                 name, followers, engagement,
-                game, platform, about
+                game, platform, style, about
             )
 
 if "result" in st.session_state:
     engagement = st.session_state.engagement
     creator_name = st.session_state.name
 
-    # Engagement metric
     st.subheader(f"📊 {creator_name}'s Analysis")
     col1, col2 = st.columns(2)
     with col1:
@@ -234,7 +251,6 @@ if "result" in st.session_state:
             else:
                 st.warning("Needs improvement!")
 
-    # Parse and display sections cleanly
     sections = parse_sections(st.session_state.result)
 
     st.divider()
@@ -270,7 +286,6 @@ if "result" in st.session_state:
     st.divider()
     st.caption("Come back after posting — I'll fix your next video 🎮")
 
-    # Feedback
     st.subheader("💬 Not happy with this idea?")
     feedback = st.text_input("Tell us why")
     regenerate = st.button("🔄 Regenerate")
@@ -279,11 +294,10 @@ if "result" in st.session_state:
         with st.spinner("Generating better idea..."):
             st.session_state.result = get_ai_suggestions(
                 name, followers, engagement,
-                game, platform, about, feedback
+                game, platform, style, about, feedback
             )
         st.rerun()
 
-# Score section
 if score_btn and post_idea:
     with st.spinner("Scoring your idea..."):
         score_result = score_post(name, post_idea, followers)
