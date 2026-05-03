@@ -26,197 +26,181 @@ def call_groq(prompt):
         return "API returned empty response. Please try again."
     return result
 
-# ---------------- AI PROMPT ENGINE ----------------
+# ---------------- AI FUNCTIONS ----------------
 
-def get_ai_suggestions(name, followers, engagement, niche, content_style, challenge, target_audience, about, feedback=""):
-    feedback_text = f"\nUSER FEEDBACK:\n{feedback}\nGenerate a completely different idea addressing this concern.\n" if feedback else ""
+def get_ai_suggestions(name, followers, engagement, game, platform, about, feedback=""):
+    feedback_text = f"\nUSER FEEDBACK:\n{feedback}\nGenerate a completely different idea.\n" if feedback else ""
 
     prompt = f"""
-CRITICAL RULES — FOLLOW THESE OR YOU FAIL:
-1. Time MUST be between 7PM-9PM. Never morning or afternoon.
-2. For Gaming niche: ONLY suggest skill improvement, rank up, or mistake correction content.
-3. NEVER suggest "show trending videos" or "join me live"
-4. Hook MUST start with "I" not "You're behind" or "Did you know"
-5. Result first — show finished outcome in first 2 seconds
+You are a viral gaming content coach.
+You have studied 10 million viral gaming videos.
+Your job is to give ONE perfect video idea for this gaming creator.
 
-Now follow these rules strictly.
-
-You are a viral content strategist...
-You are a viral content drill sergeant.
-You don't give options. You give orders.
-Your job is to tell {name} exactly what to post — one video, one decision, one action.
-
-USER DATA:
+CREATOR PROFILE:
 Name: {name}
+Game: {game}
+Platform: {platform}
 About: {about}
-Niche: {niche}
-Content Style: {content_style}
-Challenge: {challenge}
-Target Audience: {target_audience}
 Followers: {followers}
 Engagement: {engagement}%
-Preferred Platform: {platform}
 
-OUTPUT FORMAT (STRICT — NO CHANGES):
+GAMING RULES:
+- Focus ONLY on: skill improvement, rank up, mistakes, before/after proof
+- Hook must hit: ego (your aim is trash), curiosity (secret trick), or proof (before/after)
+- NEVER suggest: product downloads, live streams, random game recommendations
+- Every idea must follow: mistake → fix → result format
+- NEVER use words like: algorithms, efficiency, optimization
+- ALWAYS use: time saved, shortcut, faster result, easier way
+- Content must be phone recordable only
+- Show result FIRST, explain later
 
-[NAME]'s problem: [specific diagnosis based on their follower count and engagement — be data driven, mention their actual numbers]
+RETURN EXACTLY THIS FORMAT — NO EXTRA TEXT:
 
-YOUR BEST POST (POST THIS TOMORROW):
-Platform: [exact platform]
-Best time: [exact time]
+PROBLEM:
+[one brutal honest sentence using their actual numbers]
 
-Hook (0-2 sec):
+TITLE:
+[exact video title — scroll stopping]
+
+HOOK (0-2 sec):
 "[exact words to say]"
-[exact visual — phone recordable, no equipment needed]
+[exact visual — phone recordable]
 
-Execution:
+STEPS:
 0-3 sec: [exact action]
-3-10 sec: [exact action]
-10-18 sec: [exact action]
-18-20 sec: [exact CTA words]
+3-8 sec: [exact action]  
+8-15 sec: [exact action]
+15-20 sec: [exact CTA]
 
-Why this will work: [one line]
+POST AT:
+Platform: {platform}
+Time: [between 7PM-9PM only]
 
-What to avoid: [2-3 things killing their reach right now]
+WHY IT WORKS:
+[one line]
 
-One rule to follow for every video: [one simple rule]
-
-Come back after posting — I'll fix your next video.
-
-STRICT RULES:
-Platform preference: {platform}
-Suggest content specifically optimized for {platform} algorithm.
-- ONE idea only. Not three.
-- No long explanations
-- Every step must be doable with just a phone
-- No technical terms without simple explanation in brackets
-- Maximum 3 execution steps only
-- NO acting scenes, NO fake emotions, NO props
-- Show RESULT first, explain later
-- Hook must use ONE of these emotions:
-  * "you're behind" (FOMO)
-  * "you're wasting time" (urgency)  
-  * "no one tells you this" (secret)
-  * "I stopped doing X and this happened" (surprise)
-- Never state facts. Always trigger emotion.
-- Make viewer feel: "I'm missing out if I don't try this"
-- Avoid hooks that sound like complaints or rants
-- Talk directly to {name} throughout
-- Be decisive. Be a drill sergeant. Not a consultant.
+AVOID:
+[two specific things]
 
 {feedback_text}
 """
     return call_groq(prompt)
 
-# ---------------- SCORING ENGINE ----------------
-
 def score_post(name, post_idea, followers):
     prompt = f"""
-You are a strict viral content analyst.
-Be direct and decisive. No fluff.
+You are a strict viral content analyst for gaming creators.
 
 Creator: {name}
 Followers: {followers}
+Post idea: {post_idea}
 
-Post idea:
-{post_idea}
+RETURN EXACTLY THIS FORMAT:
 
-OUTPUT FORMAT (STRICT):
+HOOK SCORE: [X]/100
+SHAREABILITY: [X]/100  
+TREND MATCH: [X]/100
+AUDIENCE FIT: [X]/100
 
-Hook Score: /100
-Shareability: /100
-Trend Match: /100
-Audience Fit: /100
+WEAKNESS:
+[one line]
 
-Biggest weakness: [one line]
-Fix it: [one specific action]
-Verdict: [Post it / Don't post it / Fix this first]
+FIX:
+[one specific action]
+
+VERDICT: [POST IT ✅ / DON'T POST ❌ / FIX FIRST ⚠️]
 """
     return call_groq(prompt)
 
+def parse_sections(text):
+    sections = {
+        "PROBLEM": "",
+        "TITLE": "",
+        "HOOK": "",
+        "STEPS": "",
+        "POST AT": "",
+        "WHY IT WORKS": "",
+        "AVOID": ""
+    }
+    current = None
+    lines = text.split('\n')
+    for line in lines:
+        line = line.strip()
+        matched = False
+        for key in sections:
+            if line.startswith(key + ":") or line == key + ":":
+                current = key
+                content = line[len(key)+1:].strip()
+                if content:
+                    sections[key] = content
+                matched = True
+                break
+        if not matched and current:
+            if sections[current]:
+                sections[current] += "\n" + line
+            else:
+                sections[current] = line
+    return sections
+
 # ---------------- UI ----------------
 
-st.set_page_config(page_title="Vyral", page_icon="🚀")
+st.set_page_config(page_title="Vyral", page_icon="🎮")
 
-st.title("Vyral 🚀")
-st.write("AI Viral Content Engineer for Creators")
+st.title("Vyral 🎮")
+st.write("AI content coach for gaming creators")
 
-st.info("👋 Welcome to Vyral! Here's how to get started:")
-st.markdown("""
-1. Enter your details in the sidebar
-2. Click **Analyze Profile**
-3. Get your personalized viral content strategy
-4. Use **Post Scoring** to score your next idea
-""")
+st.info("👋 Enter your details in the sidebar and click **Analyze** to get your personalized content strategy!")
 
-st.sidebar.header("Creator Profile")
+# SIDEBAR
+st.sidebar.header("Your Profile")
 
-name = st.sidebar.text_input("Name")
-platform=platform = st.sidebar.selectbox("Where do you post?", [
-    "Instagram Reels",
-    "YouTube Shorts",
-    "TikTok",
-    "All platforms"
-])
+name = st.sidebar.text_input("Your name")
 followers = st.sidebar.number_input("Followers", min_value=0)
-likes = st.sidebar.number_input("Avg Likes", min_value=0)
-about = st.sidebar.text_area("About You", placeholder="e.g. I'm a 17 year old from Assam building an AI startup while learning to code...")
+likes = st.sidebar.number_input("Avg likes per post", min_value=0)
 
-niche = st.sidebar.selectbox("Niche", [
-    "AI & Tech", "Fitness & Health", "Comedy",
-    "Education", "Finance", "Fashion",
-    "Gaming", "Food", "Travel", "Other"
+game = st.sidebar.selectbox("Your game", [
+    "Valorant", "BGMI", "Fortnite",
+    "FIFA", "Free Fire", "COD", "Minecraft", "Other"
 ])
-if niche == "Other":
-    niche = st.sidebar.text_input("Describe your niche")
+if game == "Other":
+    game = st.sidebar.text_input("Which game?")
 
-content_style = st.sidebar.selectbox("Content Style", [
-    "Educational", "Entertaining", "Inspirational",
-    "Behind the scenes", "Storytelling", "Other"
+platform = st.sidebar.selectbox("Where do you post?", [
+    "YouTube Shorts", "Instagram Reels", "TikTok"
 ])
-if content_style == "Other":
-    content_style = st.sidebar.text_input("Describe your style")
 
-challenge = st.sidebar.selectbox("Biggest Challenge", [
-    "Followers", "Engagement", "Ideas",
-    "Consistency", "Standing out", "Other"
-])
-if challenge == "Other":
-    challenge = st.sidebar.text_input("Describe your challenge")
+about = st.sidebar.text_area("About you (optional)",
+    placeholder="e.g. Silver ranked Valorant player trying to reach Platinum...")
 
-target_audience = st.sidebar.selectbox("Target Audience", [
-    "Students", "Professionals", "Entrepreneurs",
-    "Parents", "Fitness lovers", "General", "Other"
-])
-if target_audience == "Other":
-    target_audience = st.sidebar.text_input("Describe your audience")
+analyze = st.sidebar.button("⚡ Analyze my profile")
 
-analyze = st.sidebar.button("Analyze Profile")
-
-st.sidebar.subheader("🎯 Post Scoring")
+st.sidebar.divider()
+st.sidebar.subheader("🎯 Score my post idea")
 post_idea = st.sidebar.text_area("Describe your post idea")
-score_btn = st.sidebar.button("Score Idea")
+score_btn = st.sidebar.button("Score it")
 
 # ---------------- LOGIC ----------------
 
 if analyze:
     if followers == 0:
-        st.error("Please enter your followers count!")
+        st.error("Please enter your follower count!")
+    elif not name:
+        st.error("Please enter your name!")
     else:
-        engagement = round((likes / followers) * 100, 2)
+        engagement = round((likes / followers) * 100, 2) if followers > 0 else 0
         st.session_state.engagement = engagement
-        with st.spinner("Analyzing viral potential..."):
+        st.session_state.name = name
+        with st.spinner("Analyzing your profile..."):
             st.session_state.result = get_ai_suggestions(
                 name, followers, engagement,
-                niche,platform, content_style,
-                challenge, target_audience,
-                about
+                game, platform, about
             )
 
 if "result" in st.session_state:
     engagement = st.session_state.engagement
+    creator_name = st.session_state.name
 
-    st.subheader(f"📊 {name}'s Analysis")
+    # Engagement metric
+    st.subheader(f"📊 {creator_name}'s Analysis")
     col1, col2 = st.columns(2)
     with col1:
         st.metric("Engagement Rate", f"{engagement}%")
@@ -227,35 +211,82 @@ if "result" in st.session_state:
             elif engagement > 4:
                 st.info("Good! Above average 👍")
             else:
-                st.warning("Needs improvement. Let's fix this!")
+                st.warning("Needs improvement!")
         elif followers < 10000:
             if engagement > 5:
                 st.success("Excellent! Top tier 🔥")
             elif engagement > 2:
                 st.info("Good! Above average 👍")
             else:
-                st.warning("Needs improvement. Let's fix this!")
+                st.warning("Needs improvement!")
         else:
             if engagement > 3:
                 st.success("Excellent! Top tier 🔥")
             elif engagement > 1:
                 st.info("Good! Above average 👍")
             else:
-                st.warning("Needs improvement. Let's fix this!")
+                st.warning("Needs improvement!")
 
-    st.subheader("🔥 Your Viral Content Strategy")
-    st.write(st.session_state.result)
+    # Parse and display sections cleanly
+    sections = parse_sections(st.session_state.result)
 
+    st.divider()
+
+    if sections["PROBLEM"]:
+        st.error(f"⚠️ {sections['PROBLEM']}")
+
+    if sections["TITLE"]:
+        st.subheader("🎬 Video Title")
+        st.info(sections["TITLE"])
+
+    if sections["HOOK"]:
+        st.subheader("🔥 Hook (0-2 sec)")
+        st.warning(sections["HOOK"])
+
+    if sections["STEPS"]:
+        st.subheader("📋 Execution Steps")
+        st.code(sections["STEPS"])
+
+    if sections["POST AT"]:
+        st.subheader("🕐 When to Post")
+        st.success(sections["POST AT"])
+
+    if sections["WHY IT WORKS"]:
+        st.subheader("💡 Why It Works")
+        st.write(sections["WHY IT WORKS"])
+
+    if sections["AVOID"]:
+        st.subheader("❌ What to Avoid")
+        st.write(sections["AVOID"])
+
+    st.divider()
+    st.caption("Come back after posting — I'll fix your next video 🎮")
+
+    # Feedback
     st.subheader("💬 Not happy with this idea?")
-    feedback = st.text_input("Tell us why and we'll generate a better one")
-    regenerate = st.button("Regenerate Idea")
+    feedback = st.text_input("Tell us why")
+    regenerate = st.button("🔄 Regenerate")
 
     if regenerate and feedback:
         with st.spinner("Generating better idea..."):
             st.session_state.result = get_ai_suggestions(
-                name, followers,platform, engagement,
-                niche, content_style,
-                challenge, target_audience,
-                about, feedback
+                name, followers, engagement,
+                game, platform, about, feedback
             )
         st.rerun()
+
+# Score section
+if score_btn and post_idea:
+    with st.spinner("Scoring your idea..."):
+        score_result = score_post(name, post_idea, followers)
+    st.divider()
+    st.subheader("📊 Post Score Report")
+
+    lines = score_result.split('\n')
+    for line in lines:
+        if 'SCORE:' in line or 'SHAREABILITY:' in line or 'TREND' in line or 'AUDIENCE' in line:
+            st.metric(line.split(':')[0].strip(), line.split(':')[1].strip() if ':' in line else "")
+        elif 'VERDICT' in line:
+            st.subheader(line)
+        elif line.strip():
+            st.write(line)
