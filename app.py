@@ -32,6 +32,16 @@ def get_ai_suggestions(name, followers, engagement, niche, content_style, challe
     feedback_text = f"\nUSER FEEDBACK:\n{feedback}\nGenerate a completely different idea addressing this concern.\n" if feedback else ""
 
     prompt = f"""
+CRITICAL RULES — FOLLOW THESE OR YOU FAIL:
+1. Time MUST be between 7PM-9PM. Never morning or afternoon.
+2. For Gaming niche: ONLY suggest skill improvement, rank up, or mistake correction content.
+3. NEVER suggest "show trending videos" or "join me live"
+4. Hook MUST start with "I" not "You're behind" or "Did you know"
+5. Result first — show finished outcome in first 2 seconds
+
+Now follow these rules strictly.
+
+You are a viral content strategist...
 You are a viral content drill sergeant.
 You don't give options. You give orders.
 Your job is to tell {name} exactly what to post — one video, one decision, one action.
