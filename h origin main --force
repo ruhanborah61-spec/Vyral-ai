@@ -1,0 +1,71 @@
+[33mcommit 30b78fa57c339e4fda2e35e2148c0b5f26bb25e3[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: Ruhan <duttamousumi419@gmail.com>
+Date:   Sun May 3 15:20:12 2026 +0530
+
+    Removed API key and fixed security
+
+[33mcommit e116456f2bb781a9a98c29b08e45baa7ee835e78[m
+Author: Ruhan <duttamousumi419@gmail.com>
+Date:   Sun May 3 15:18:05 2026 +0530
+
+    final prompt rewrite
+
+[33mcommit dbafa738b7939324a113b4160aac0da51cc3c369[m
+Author: Ruhan <duttamousumi419@gmail.com>
+Date:   Sun May 3 15:13:32 2026 +0530
+
+    final prompt rewrite
+
+[33mcommit 93859137a08b62f5c5406acc6c7649fc6a625830[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: Ruhan <duttamousumi419@gmail.com>
+Date:   Fri May 1 16:36:43 2026 +0530
+
+    improved hook emotion triggers
+
+[33mcommit 160e7a5157a9e8552cd74da26debba29f0e53c58[m
+Author: Ruhan <duttamousumi419@gmail.com>
+Date:   Fri May 1 16:29:57 2026 +0530
+
+    upgraded to llama 70b
+
+[33mcommit a7eacee2b0d5e749463ae195183728b35fc44cbc[m
+Author: Ruhan <duttamousumi419@gmail.com>
+Date:   Fri May 1 16:19:40 2026 +0530
+
+    removed debug
+
+[33mcommit 8a511112b0dfb1365cb9a3832ad4679798291d5b[m
+Author: Ruhan <duttamousumi419@gmail.com>
+Date:   Fri May 1 16:14:19 2026 +0530
+
+    removed debug
+
+[33mcommit a3fdd8f9c48dcd4f4041c0b32cb2eeb8b6d1aadc[m
+Author: Ruhan <duttamousumi419@gmail.com>
+Date:   Fri May 1 16:12:42 2026 +0530
+
+    debug fix
+
+[33mcommit 1ee04a6ddce16288aa73cc67b4d0697763b6a97f[m
+Author: Ruhan <duttamousumi419@gmail.com>
+Date:   Fri May 1 16:04:38 2026 +0530
+
+    debug fix
+
+[33mcommit 3f808897c226957aad4e314300370b06e5c98898[m
+Author: Ruhan <duttamousumi419@gmail.com>
+Date:   Fri May 1 15:41:45 2026 +0530
+
+    fixed empty response
+
+[33mcommit 493c00a4f432d06ef0bbd3e6847a918149b9a81c[m
+Author: Ruhan <duttamousumi419@gmail.com>
+Date:   Fri May 1 15:32:12 2026 +0530
+
+    upgraded to drill sergeant prompt
+
+[33mcommit 8d069803d2d0fccc3b5b28b4bc58b787d70a8b7f[m
+Author: Ruhan <duttamousumi419@gmail.com>
+Date:   Fri May 1 10:16:53 2026 +0530
+
+    Vyral clean launch
