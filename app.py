@@ -83,10 +83,11 @@ HOOK (0-2 sec):
 [exact visual — phone recordable only]
 
 STEPS:
-0-3 sec: [exact action]
-3-8 sec: [exact action]
-8-15 sec: [exact action]
-15-20 sec: [exact CTA]
+0-2 sec: [exact visual on screen + fast zoom or cut]
+2-5 sec: [exact visual + text overlay if needed]
+5-10 sec: [exact clip + what creator says]
+10-15 sec: [exact reveal moment]
+15-20 sec: [exact ending line — no link in bio]
 
 POST AT:
 Platform: {platform}
