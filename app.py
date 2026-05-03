@@ -60,6 +60,8 @@ GAMING RULES:
 - Content must be phone recordable only
 - Show result FIRST, explain later
 - Time MUST be between 7PM-9PM only
+- CTA must keep viewers ON the platform — never "link in bio"
+- Use: "follow for part 2" or "comment your rank" instead
 
 STYLE RULES:
 - Teaching: focus on tips, before/after, measurable improvement
