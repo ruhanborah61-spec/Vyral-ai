@@ -58,7 +58,7 @@ Engagement: {engagement}%
 
 OUTPUT FORMAT (STRICT — NO CHANGES):
 
-{name}'s problem: [one brutal diagnosis in simple language]
+[NAME]'s problem: [specific diagnosis based on their follower count and engagement — be data driven, mention their actual numbers]
 
 YOUR BEST POST (POST THIS TOMORROW):
 Platform: [exact platform]
