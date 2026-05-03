@@ -51,6 +51,9 @@ GAMING RULES:
 - Every idea must follow: mistake → fix → result format
 - NEVER use words like: algorithms, efficiency, optimization
 - ALWAYS use: time saved, shortcut, faster result, easier way
+- Every idea MUST include a before vs after or measurable proof element
+- Never give generic tips — always show a tracked result or comparison
+- Hook must NOT use "your aim is trash" — use curiosity or tracking instead
 - Content must be phone recordable only
 - Show result FIRST, explain later
 
