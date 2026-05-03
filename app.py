@@ -50,6 +50,10 @@ GAMING RULES:
 - NEVER suggest: product downloads, live streams, random game recommendations
 - Every idea must follow: mistake → fix → result format
 - NEVER use words like: algorithms, efficiency, optimization
+- NEVER fully reveal the trick in the hook
+- Create curiosity gap — hint at result, delay explanation
+- NEVER use "secret trick" or "hack" — sounds like clickbait
+- Use believable numbers — not "jumped 3 ranks" but "something changed in my rank"
 - ALWAYS use: time saved, shortcut, faster result, easier way
 - Every idea MUST include a before vs after or measurable proof element
 - Never give generic tips — always show a tracked result or comparison
@@ -236,7 +240,8 @@ if "result" in st.session_state:
     st.divider()
 
     if sections["PROBLEM"]:
-        st.error(f"⚠️ {sections['PROBLEM']}")
+        st.subheader("⚠️ Your Growth Problem")
+        st.warning(sections["PROBLEM"])
 
     if sections["TITLE"]:
         st.subheader("🎬 Video Title")
