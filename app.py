@@ -143,8 +143,23 @@ TITLE:
 [contrast title using real {game} ranks or stats — example: "Silver → Gold. Same player. 7 days."]
 
 HOOK:
-[exact words to say]
-[exact in-game visual using only valid visuals listed above]
+
+Choose ONE hook style (do not repeat the same style as previous outputs):
+
+1. Mistake exposure → call out viewer mistake
+2. Skill shock → unbelievable moment
+3. Curiosity gap → incomplete info that forces watch
+4. Reverse psychology → tell viewer to stop doing something
+5. Challenge → dare viewer to try something
+6. Fast result → instant improvement claim
+
+Rules:
+- First line = exact words (max 8 words, punchy)
+- Second line = exact visual from inside the game
+- Visual must create curiosity WITHOUT explanation
+- Words must NOT repeat phrases like “same player” or “different result”
+- Avoid generic phrases like “watch this”, “you won’t believe”
+- Every hook must feel DIFFERENT from previous ones
 
 STEP 1:
 [camera direction + exact in-game action]
