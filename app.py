@@ -9,64 +9,80 @@ if not API_KEY:
     st.error("❌ Missing GROQ_API_KEY in Streamlit secrets")
     st.stop()
 
-# ---------------- GAME KNOWLEDGE LAYER ----------------
-# Only real, verified in-game elements. Nothing invented.
+# ---------------- GAME KNOWLEDGE ----------------
 
 GAME_DATA = {
     "Valorant": {
         "ranks": ["Iron 1-3", "Bronze 1-3", "Silver 1-3", "Gold 1-3", "Platinum 1-3", "Diamond 1-3", "Ascendant 1-3", "Immortal 1-3", "Radiant"],
-        "stats": ["K/D ratio", "headshot %", "ACS (Average Combat Score)", "win rate"],
-        "screen_elements": ["rank screen", "scoreboard", "kill feed", "crosshair", "minimap", "agent select screen", "round timer"],
-        "real_actions": ["missing shots", "hitting headshot", "planting spike", "defusing spike", "using ability", "peeking corner", "holding angle", "rotating site"],
-        "forbidden": ["kill counter overlay", "engagement meter", "XP bar during match", "friend online notification during gameplay"]
+        "screen_elements": ["scoreboard", "kill feed", "crosshair", "minimap", "rank screen", "death screen", "spike timer", "round timer", "ACS", "headshot %"],
+        "relatable_situations": [
+            "missing an easy shot", "dying to a Silver player", "teammates not rotating",
+            "spike planted wrong site", "running out of credits", "getting one-tapped",
+            "losing a 1v1 you should win", "trolling teammate", "losing streak", "clutching and losing next round"
+        ],
+        "meme_reactions": ["facepalm", "disbelief", "rage quit moment", "unexpected win", "carried by teammate"]
     },
     "BGMI": {
         "ranks": ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Crown", "Ace", "Conqueror"],
-        "stats": ["K/D ratio", "damage dealt", "survival time", "top 10 finishes"],
-        "screen_elements": ["rank screen", "kill feed", "damage numbers", "zone map", "inventory screen", "health bar", "boost bar"],
-        "real_actions": ["looting", "zone rotation", "recoil control", "reviving teammate", "throwing grenade", "driving vehicle", "jumping from plane"],
-        "forbidden": ["engagement analytics", "win rate popup mid-game", "follower count overlay"]
-    },
-    "Fortnite": {
-        "ranks": ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Elite", "Champion", "Unreal"],
-        "stats": ["eliminations", "placement", "Victory Royales", "survival time"],
-        "screen_elements": ["rank screen", "elimination feed", "materials counter", "storm circle map", "health and shield bars"],
-        "real_actions": ["building wall", "editing structure", "box fighting", "storm rotation", "picking up weapon", "Victory Royale screen"],
-        "forbidden": ["analytics overlay", "engagement counter", "fake building counter"]
+        "screen_elements": ["kill feed", "damage numbers", "zone map", "health bar", "boost bar", "rank screen", "death screen", "inventory"],
+        "relatable_situations": [
+            "dying in final zone", "getting thirsted after knock", "looting the whole game and dying early",
+            "teammate stealing kill", "missing a shot at close range", "vehicle exploding",
+            "running out of ammo in fight", "getting hit by pan", "dying to zone"
+        ],
+        "meme_reactions": ["rage moment", "disbelief", "unexpected third party", "clutch fail", "lucky win"]
     },
     "Free Fire": {
         "ranks": ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Heroic", "Grandmaster"],
-        "stats": ["K/D ratio", "win rate", "survival time", "headshot rate"],
-        "screen_elements": ["rank screen", "kill feed", "gloo wall UI", "character skill icons", "health bar", "zone timer"],
-        "real_actions": ["placing gloo wall", "using character skill", "looting", "parachuting", "reviving teammate", "final zone fight"],
-        "forbidden": ["fake skill meter", "invented character stats", "engagement overlay"]
+        "screen_elements": ["kill feed", "health bar", "gloo wall UI", "character skill icons", "rank screen", "zone timer", "death screen"],
+        "relatable_situations": [
+            "gloo wall not working", "dying to gloo wall camper", "character skill failing",
+            "hot drop death", "teammate revive ignored", "missing shots at close range",
+            "dying to final zone", "getting knocked by random"
+        ],
+        "meme_reactions": ["disbelief", "rage", "clutch moment fail", "lucky escape", "unexpected death"]
     },
     "Minecraft": {
-        "ranks": ["no rank system — use days survived or challenge milestone"],
-        "stats": ["days survived", "items collected", "build size", "deaths count"],
-        "screen_elements": ["hotbar", "health hearts", "hunger bar", "inventory screen", "XP bar", "death screen", "coordinates"],
-        "real_actions": ["mining", "building", "crafting", "fighting mob", "dying", "respawning", "opening chest"],
-        "forbidden": ["rank screen", "K/D ratio", "headshot percentage"]
+        "ranks": ["Day 1", "Day 10", "Day 100"],
+        "screen_elements": ["health hearts", "hunger bar", "hotbar", "inventory", "XP bar", "death screen", "coordinates", "crafting table UI"],
+        "relatable_situations": [
+            "dying to creeper", "falling into lava", "losing diamonds", "skeleton shooting from dark",
+            "forgetting to eat", "dying on day 99 of 100 days", "getting lost in caves",
+            "bed not set", "respawning far from base"
+        ],
+        "meme_reactions": ["screaming internally", "everything is fine then dies", "unexpected creeper", "clutch escape"]
     },
     "Bedwars": {
         "ranks": ["Iron", "Gold", "Diamond", "Emerald", "Sapphire", "Ruby", "Crystal", "Opal", "Amethyst", "Mirror"],
-        "stats": ["FKDR (Final Kill Death Ratio)", "wins", "beds broken", "final kills"],
-        "screen_elements": ["scoreboard", "bed status", "resource counter", "kill feed", "death screen", "win screen"],
-        "real_actions": ["breaking enemy bed", "defending own bed", "buying from shop", "rushing enemy island", "bridging", "dying to fall damage"],
-        "forbidden": ["invented Bedwars mechanics", "fake resource names", "non-existent shop items"]
+        "screen_elements": ["scoreboard", "bed status icons", "resource counter", "kill feed", "death screen", "win screen", "shop UI"],
+        "relatable_situations": [
+            "bed broken while defending", "dying to void", "enemy rushing with fireball",
+            "forgetting to protect bed", "getting spawn killed", "running out of resources",
+            "teammate leaving mid game", "winning with 1 heart"
+        ],
+        "meme_reactions": ["betrayal feeling", "panic mode", "clutch win", "unexpected loss", "rage"]
+    },
+    "CS2": {
+        "ranks": ["Silver 1-4", "Silver Elite", "Gold Nova 1-4", "Master Guardian 1-2", "Legendary Eagle", "Supreme", "Global Elite"],
+        "screen_elements": ["scoreboard", "kill feed", "crosshair", "radar", "money display", "health bar", "rank screen", "death cam"],
+        "relatable_situations": [
+            "missing a shot at point blank", "buying wrong weapon", "teammate blocking shot",
+            "falling off ledge", "bomb timer panic", "running out of bullets in fight",
+            "getting headshot through smoke", "losing pistol round", "eco round fail"
+        ],
+        "meme_reactions": ["disbelief", "teammate blame", "clutch choke", "unexpected win", "rank anxiety"]
     }
 }
 
 def get_game_data(game):
     return GAME_DATA.get(game, {
         "ranks": ["beginner", "intermediate", "advanced"],
-        "stats": ["kills", "wins", "performance"],
-        "screen_elements": ["scoreboard", "health bar", "gameplay footage"],
-        "real_actions": ["basic gameplay actions"],
-        "forbidden": ["invented mechanics"]
+        "screen_elements": ["scoreboard", "health bar", "kill feed"],
+        "relatable_situations": ["missing shots", "dying unexpectedly", "losing a close game"],
+        "meme_reactions": ["disbelief", "rage", "unexpected moment"]
     })
 
-# ---------------- API ----------------
+# ---------------- API CALL ----------------
 
 def call_groq(prompt):
     url = "https://api.groq.com/openai/v1/chat/completions"
@@ -77,7 +93,7 @@ def call_groq(prompt):
     data = {
         "model": "qwen/qwen3-32b",
         "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.6
+        "temperature": 0.65
     }
     response = requests.post(url, json=data, headers=headers)
     if response.status_code != 200:
@@ -91,118 +107,100 @@ def clean_response(text):
     text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
     return text.strip()
 
-# ---------------- VALIDATION ----------------
+# ---------------- MEME PROMPT ----------------
 
-def validate_output(text, game):
-    """Check if output contains forbidden elements for this game"""
+def get_meme_script(name, game, rank, platform, situation, feedback=""):
     gd = get_game_data(game)
-    forbidden = gd.get("forbidden", [])
-    warnings = []
-    for item in forbidden:
-        if item.lower() in text.lower():
-            warnings.append(f"⚠️ Possible hallucination detected: '{item}'")
-    return warnings
-
-# ---------------- MASTER PROMPT ----------------
-
-def get_ai_suggestions(name, followers, engagement, game, platform, style, about, feedback=""):
-    gd = get_game_data(game)
-    feedback_text = f"\nUSER FEEDBACK: {feedback}\nGenerate a completely different idea.\n" if feedback else ""
+    feedback_text = f"\nUSER FEEDBACK: {feedback}\nGenerate a completely different meme idea.\n" if feedback else ""
 
     prompt = f"""
-You are a STRICT viral gaming video script generator.
-
-YOUR ONLY JOB: Describe exactly what appears on screen, frame by frame.
-
-ABSOLUTE RULES — VIOLATION = FAILURE:
-- ONLY describe what is VISIBLE on a screen recording
-- ZERO storytelling, emotions, or narration
-- ZERO invented mechanics, fake stats, or impossible UI
-- ZERO cinematic language ("dramatic zoom", "intense moment")
-- EACH STEP = ONE visible screen frame only
-- Use ONLY the game elements listed below
+You are a viral gaming meme script generator.
+You write short-form meme scripts that gamers can open OBS and record immediately.
 
 CREATOR:
 Name: {name}
 Game: {game}
+Rank: {rank}
 Platform: {platform}
-Style: {style}
-Followers: {followers}
-Engagement: {engagement}%
-About: {about}
+Situation: {situation}
 
 VERIFIED {game.upper()} ELEMENTS — USE ONLY THESE:
-Real ranks: {', '.join(gd['ranks'])}
-Real stats: {', '.join(gd['stats'])}
+Ranks: {', '.join(gd['ranks'])}
 Real screen elements: {', '.join(gd['screen_elements'])}
-Real in-game actions: {', '.join(gd['real_actions'])}
-FORBIDDEN (never use): {', '.join(gd['forbidden'])}
+Relatable situations: {', '.join(gd['relatable_situations'])}
+Meme reactions: {', '.join(gd['meme_reactions'])}
 
-HOOK TEMPLATES — PICK EXACTLY ONE:
-- "Same player. Different result."
-- "X days changed everything"
-- "This shouldn't be possible"
-- "I tested this for X days"
+MEME SCRIPT RULES:
+1. Every frame = one visible screen moment only
+2. Zero storytelling, zero narration, zero emotions described
+3. Only describe what is VISIBLE on screen
+4. Maximum 6 frames total
+5. Each frame must be recordable from real gameplay
+6. Text overlays must be short — maximum 5 words
+7. Use only real screen elements listed above
+8. Meme must be relatable to ANY player at {rank} rank
+9. Pacing: fast cuts — each frame maximum 3 seconds
+10. NEVER invent fake UI, fake stats, or impossible actions
+11. NO thinking tags in output
 
-CTA OPTIONS — PICK EXACTLY ONE:
-- "Comment your rank"
-- "Most players miss this"
+MEME FORMATS — PICK ONE THAT FITS:
+- "Me vs the game" (player expectation vs reality)
+- "Every [rank] player ever" (relatable rank behavior)
+- "POV: [situation]" (point of view meme)
+- "When [thing happens]" (reaction meme)
+- "Day X of [challenge]" (progress meme)
 
-OUTPUT FORMAT — RETURN EXACTLY THIS — NO THINKING TAGS — NO EXTRA TEXT:
+OUTPUT FORMAT — RETURN EXACTLY THIS — NO EXTRA TEXT:
 
-PROBLEM:
-one sentence using {name}'s exact follower and engagement numbers
+MEME TITLE:
+one punchy meme title using the format above
 
-TITLE:
-contrast title using ONLY real {game} ranks or stats
+MEME TYPE:
+which format you picked and why in one line
 
-HOOK:
-exact 2-second spoken line using one hook template above
-exact screen visible at this moment using only real screen elements
+FRAME 1:
+exact screen element visible + text overlay if needed
 
-STEP 1:
-screen cut type + exactly what is visible on screen
+FRAME 2:
+exact screen element visible + text overlay if needed
 
-STEP 2:
-screen cut type + exactly what is visible on screen
+FRAME 3:
+exact screen element visible + text overlay if needed
 
-STEP 3:
-screen cut type + exactly what is visible on screen
+FRAME 4:
+exact screen element visible + text overlay if needed
 
-STEP 4:
-screen cut type + exactly what is visible on screen
+FRAME 5:
+exact screen element visible + text overlay if needed
 
-STEP 5:
-screen cut type + exact ending line spoken + CTA from options above
+FRAME 6:
+exact screen element visible + final text overlay + CTA
 
 POST TIME:
 Platform: {platform}
 Time: between 7PM and 9PM
 
 WHY IT WORKS:
-one sentence — psychology only, no hype
-
-AVOID:
-two specific things that will kill reach on {platform}
+one sentence — what makes this relatable
 
 {feedback_text}
 """
     return call_groq(prompt)
 
-def score_post(name, post_idea, followers):
+def score_post(name, post_idea, game):
     prompt = f"""
-You are a strict viral content analyst. No thinking tags. Direct output only.
+You are a strict viral gaming meme analyst. No thinking tags. Direct output only.
 
 Creator: {name}
-Followers: {followers}
-Post idea: {post_idea}
+Game: {game}
+Meme idea: {post_idea}
 
 RETURN EXACTLY THIS:
 
-HOOK SCORE: X/100
+RELATABILITY: X/100
+HUMOR SCORE: X/100
 SHAREABILITY: X/100
-TREND MATCH: X/100
-AUDIENCE FIT: X/100
+RECORD EASE: X/100
 
 WEAKNESS: one line
 FIX: one action
@@ -215,9 +213,10 @@ VERDICT: POST IT or DONT POST or FIX FIRST
 def parse_sections(text):
     text = clean_response(text)
     keys = [
-        "PROBLEM", "TITLE", "HOOK",
-        "STEP 1", "STEP 2", "STEP 3", "STEP 4", "STEP 5",
-        "POST TIME", "WHY IT WORKS", "AVOID"
+        "MEME TITLE", "MEME TYPE",
+        "FRAME 1", "FRAME 2", "FRAME 3",
+        "FRAME 4", "FRAME 5", "FRAME 6",
+        "POST TIME", "WHY IT WORKS"
     ]
     sections = {k: "" for k in keys}
     current = None
@@ -252,127 +251,70 @@ def parse_sections(text):
 st.set_page_config(page_title="Vyral", page_icon="🎮")
 
 st.title("Vyral 🎮")
-st.write("AI content coach for gaming creators")
+st.write("Gaming meme script generator — open OBS and record")
 
-st.info("👋 Fill in your details in the sidebar and click **Analyze** to get your video strategy!")
+st.info("👋 Fill in your details and get a ready-to-record meme script in seconds!")
 
 st.sidebar.header("Your Profile")
 
 name = st.sidebar.text_input("Your name")
-followers = st.sidebar.number_input("Followers", min_value=0)
-likes = st.sidebar.number_input("Avg likes per post", min_value=0)
 
 game = st.sidebar.selectbox("Your game", [
-    "Valorant", "BGMI", "Fortnite",
-    "Free Fire", "COD", "Minecraft", "Bedwars", "Other"
+    "Valorant", "BGMI", "Free Fire",
+    "Minecraft", "Bedwars", "CS2"
 ])
-if game == "Other":
-    game = st.sidebar.text_input("Which game?")
+
+gd = get_game_data(game)
+rank = st.sidebar.selectbox("Your current rank", gd["ranks"])
 
 platform = st.sidebar.selectbox("Where do you post?", [
     "YouTube Shorts", "Instagram Reels", "TikTok"
 ])
 
-style = st.sidebar.selectbox("Your content style", [
-    "Teaching (tips & tricks)",
-    "Meme & Comedy",
-    "Clutch moments & highlights",
-    "Rank up journey",
-    "Reaction & commentary",
-    "Other"
-])
-if style == "Other":
-    style = st.sidebar.text_input("Describe your style")
+situation = st.sidebar.selectbox(
+    "Pick a relatable situation",
+    gd["relatable_situations"]
+)
 
-about = st.sidebar.text_area("About you (optional)",
-    placeholder="e.g. Silver ranked Valorant player trying to reach Platinum...")
-
-analyze = st.sidebar.button("⚡ Analyze my profile")
+generate = st.sidebar.button("🎮 Generate Meme Script")
 
 st.sidebar.divider()
-st.sidebar.subheader("🎯 Score my post idea")
-post_idea = st.sidebar.text_area("Describe your post idea")
+st.sidebar.subheader("🎯 Score my meme idea")
+meme_idea = st.sidebar.text_area("Describe your meme idea")
 score_btn = st.sidebar.button("Score it")
 
 # ---------------- LOGIC ----------------
 
-if analyze:
-    if followers == 0:
-        st.error("Please enter your follower count!")
-    elif not name:
+if generate:
+    if not name:
         st.error("Please enter your name!")
     else:
-        engagement = round((likes / followers) * 100, 2) if followers > 0 else 0
-        st.session_state.engagement = engagement
         st.session_state.name = name
         st.session_state.game = game
-        with st.spinner("Analyzing your profile..."):
-            st.session_state.result = get_ai_suggestions(
-                name, followers, engagement,
-                game, platform, style, about
+        with st.spinner("Generating your meme script..."):
+            st.session_state.result = get_meme_script(
+                name, game, rank, platform, situation
             )
 
 if "result" in st.session_state:
-    engagement = st.session_state.engagement
-    creator_name = st.session_state.name
-    current_game = st.session_state.get("game", "Valorant")
-
-    st.subheader(f"📊 {creator_name}'s Analysis")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.metric("Engagement Rate", f"{engagement}%")
-    with col2:
-        if followers < 1000:
-            if engagement > 8:
-                st.success("Excellent! Top tier for your size 🔥")
-            elif engagement > 4:
-                st.info("Good! Above average 👍")
-            else:
-                st.warning("Needs improvement!")
-        elif followers < 10000:
-            if engagement > 5:
-                st.success("Excellent! Top tier 🔥")
-            elif engagement > 2:
-                st.info("Good! Above average 👍")
-            else:
-                st.warning("Needs improvement!")
-        else:
-            if engagement > 3:
-                st.success("Excellent! Top tier 🔥")
-            elif engagement > 1:
-                st.info("Good! Above average 👍")
-            else:
-                st.warning("Needs improvement!")
-
     sections = parse_sections(st.session_state.result)
-
-    # Validate output for hallucinations
-    warnings = validate_output(st.session_state.result, current_game)
-    if warnings:
-        for w in warnings:
-            st.error(w)
 
     st.divider()
 
-    if sections["PROBLEM"]:
-        st.subheader("⚠️ Your Growth Problem")
-        st.warning(sections["PROBLEM"])
+    if sections["MEME TITLE"]:
+        st.subheader("😂 Meme Title")
+        st.info(sections["MEME TITLE"])
 
-    if sections["TITLE"]:
-        st.subheader("🎬 Video Title")
-        st.info(sections["TITLE"])
+    if sections["MEME TYPE"]:
+        st.caption(f"Format: {sections['MEME TYPE']}")
 
-    if sections["HOOK"]:
-        st.subheader("🔥 Hook (0-2 sec)")
-        st.warning(sections["HOOK"])
-
-    steps_exist = any(sections[f"STEP {i}"] for i in range(1, 6))
-    if steps_exist:
-        st.subheader("📋 Execution Steps")
-        for i in range(1, 6):
-            step = sections[f"STEP {i}"]
-            if step:
-                st.markdown(f"**Step {i}:** {step}")
+    frames_exist = any(sections[f"FRAME {i}"] for i in range(1, 7))
+    if frames_exist:
+        st.subheader("🎬 Script Frames")
+        for i in range(1, 7):
+            frame = sections[f"FRAME {i}"]
+            if frame:
+                st.markdown(f"**Frame {i}:** {frame}")
 
     if sections["POST TIME"]:
         st.subheader("🕐 When to Post")
@@ -382,34 +324,35 @@ if "result" in st.session_state:
         st.subheader("💡 Why It Works")
         st.write(sections["WHY IT WORKS"])
 
-    if sections["AVOID"]:
-        st.subheader("❌ What to Avoid")
-        st.write(sections["AVOID"])
-
     st.divider()
-    st.caption("Come back after posting — I'll fix your next video 🎮")
+    st.caption("Open OBS → Record exactly these frames → Post 🎮")
 
-    st.subheader("💬 Not happy with this idea?")
+    st.subheader("💬 Not happy with this script?")
     feedback = st.text_input("Tell us why")
     regenerate = st.button("🔄 Regenerate")
 
     if regenerate and feedback:
-        with st.spinner("Generating better idea..."):
-            st.session_state.result = get_ai_suggestions(
-                name, followers, engagement,
-                game, platform, style, about, feedback
+        with st.spinner("Generating different script..."):
+            st.session_state.result = get_meme_script(
+                st.session_state.name,
+                st.session_state.game,
+                rank, platform, situation, feedback
             )
         st.rerun()
 
-if score_btn and post_idea:
-    with st.spinner("Scoring your idea..."):
-        score_result = score_post(name, post_idea, followers)
+if score_btn and meme_idea:
+    with st.spinner("Scoring your meme idea..."):
+        score_result = score_post(
+            st.session_state.get("name", "Creator"),
+            meme_idea,
+            st.session_state.get("game", "Valorant")
+        )
     score_result = clean_response(score_result)
     st.divider()
-    st.subheader("📊 Post Score Report")
+    st.subheader("📊 Meme Score")
     lines = score_result.split('\n')
     for line in lines:
-        if any(x in line.upper() for x in ['HOOK SCORE', 'SHAREABILITY', 'TREND MATCH', 'AUDIENCE FIT']):
+        if any(x in line.upper() for x in ['RELATABILITY', 'HUMOR', 'SHAREABILITY', 'RECORD']):
             parts = line.split(':')
             if len(parts) == 2:
                 st.metric(parts[0].strip(), parts[1].strip())
