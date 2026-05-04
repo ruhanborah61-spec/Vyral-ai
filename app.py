@@ -146,7 +146,9 @@ WHY IT WORKS:
 one simple sentence
 
 AVOID:
-two specific things that would kill this video
+AVOID must be specific to THIS idea.
+Do NOT give generic advice like “don’t show face” or “avoid low quality”.
+Each point must describe a mistake that would directly reduce views or trust in THIS exact video.
 
 {feedback_text}
 """
