@@ -309,7 +309,6 @@ if "result" in st.session_state:
                 name, followers, engagement,
                 game, platform, style, about, feedback
             )
-        st.rerun()
 
 if score_btn and post_idea:
     with st.spinner("Scoring your idea..."):
