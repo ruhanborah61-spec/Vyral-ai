@@ -227,6 +227,7 @@ if analyze:
                 name, followers, engagement,
                 game, platform, style, about
             )
+            st.write("RAW:", st.session_state.result)
 
 if "result" in st.session_state:
     engagement = st.session_state.engagement
