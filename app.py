@@ -9,6 +9,70 @@ if not API_KEY:
     st.error("❌ Missing GROQ_API_KEY in Streamlit secrets")
     st.stop()
 
+# ---------------- GAME KNOWLEDGE LAYER ----------------
+GAME_KNOWLEDGE = {
+    "Valorant": {
+        "ranks": "Iron, Bronze, Silver, Gold, Platinum, Diamond, Ascendant, Immortal, Radiant",
+        "stats": "K/D ratio, headshot percentage, win rate, ACS (Average Combat Score)",
+        "mechanics": "crosshair placement, pre-aiming, peeking, spray control, ability usage, site control, rotation",
+        "visuals": "rank screen, scoreboard, kill feed, minimap, crosshair, agent select screen",
+        "content_hooks": "rank up journey, aim improvement, crosshair tips, agent guides, clutch moments"
+    },
+    "BGMI": {
+        "ranks": "Bronze, Silver, Gold, Platinum, Diamond, Crown, Ace, Conqueror",
+        "stats": "K/D ratio, damage per match, survival time, win rate",
+        "mechanics": "drop location, looting, zone rotation, recoil control, vehicle usage, compound strategy",
+        "visuals": "rank screen, kill feed, damage numbers, zone map, inventory screen",
+        "content_hooks": "hot drop survival, recoil control, zone strategy, Conqueror push"
+    },
+    "Fortnite": {
+        "ranks": "Bronze, Silver, Gold, Platinum, Diamond, Elite, Champion, Unreal",
+        "stats": "eliminations, placement, survival time, Victory Royales",
+        "mechanics": "building, editing, box fighting, zone rotation, weapon selection, storm strategy",
+        "visuals": "rank screen, elimination feed, building materials count, storm circle map",
+        "content_hooks": "zero build tips, edit course, box fight, Victory Royale run"
+    },
+    "FIFA": {
+        "ranks": "Division 10 to Division 1, Elite Division",
+        "stats": "win rate, goals scored, clean sheets, pass accuracy",
+        "mechanics": "skill moves, defensive positioning, finesse shots, set pieces, player chemistry",
+        "visuals": "division rank screen, match result screen, player stats card, goal replay",
+        "content_hooks": "rank up from Division 5, skill move tutorials, best meta players, comeback wins"
+    },
+    "Free Fire": {
+        "ranks": "Bronze, Silver, Gold, Platinum, Diamond, Heroic, Grandmaster",
+        "stats": "K/D ratio, win rate, survival time, headshot rate",
+        "mechanics": "drop zone, gloo wall usage, character skills, rotation, final zone strategy",
+        "visuals": "rank screen, kill feed, gloo wall placement, character skill screen",
+        "content_hooks": "Grandmaster push, gloo wall tricks, character skill combos, hot drop survival"
+    },
+    "COD": {
+        "ranks": "Bronze, Silver, Gold, Platinum, Diamond, Crimson, Iridescent, Top 250",
+        "stats": "K/D ratio, win rate, damage per game, headshot percentage",
+        "mechanics": "slide cancel, movement, sniper quick scope, SMG rushing, hardpoint rotation",
+        "visuals": "rank screen, kill feed, scorestreak screen, damage numbers",
+        "content_hooks": "rank up journey, movement tips, best loadout, clutch moments"
+    },
+    "Minecraft": {
+        "ranks": "no rank system — use subscriber milestones or challenge completion",
+        "stats": "build time, survival days, challenge completion",
+        "mechanics": "redstone, speedrun techniques, building, survival strategies, PvP",
+        "visuals": "build before/after, speedrun timer, inventory, death screen",
+        "content_hooks": "speedrun, 100 days challenge, build transformation, survival tips"
+    }
+}
+
+def get_game_info(game):
+    return GAME_KNOWLEDGE.get(game, {
+        "ranks": "beginner to advanced",
+        "stats": "kills, wins, performance metrics",
+        "mechanics": "basic gameplay mechanics",
+        "visuals": "gameplay footage, score screen",
+        "content_hooks": "improvement journey, tips and tricks"
+    })
+
+# ---------------- API CALL ----------------
+
 def call_groq(prompt):
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {
@@ -17,7 +81,8 @@ def call_groq(prompt):
     }
     data = {
         "model": "qwen/qwen3-32b",
-        "messages": [{"role": "user", "content": prompt}]
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.7
     }
     response = requests.post(url, json=data, headers=headers)
     if response.status_code != 200:
@@ -28,32 +93,131 @@ def call_groq(prompt):
     return result
 
 def clean_response(text):
-    # Remove <think>...</think> blocks completely
     text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
     return text.strip()
 
+# ---------------- MASTER PROMPT ----------------
+
+def get_ai_suggestions(name, followers, engagement, game, platform, style, about, feedback=""):
+    game_info = get_game_info(game)
+    feedback_text = f"\nUSER FEEDBACK: {feedback}\nGenerate a completely different idea that fixes this.\n" if feedback else ""
+
+    prompt = f"""
+You are a viral gaming content coach specializing in short-form video strategy.
+
+CREATOR PROFILE:
+Name: {name}
+Game: {game}
+Platform: {platform}
+Style: {style}
+About: {about}
+Followers: {followers}
+Engagement: {engagement}%
+
+REAL {game.upper()} KNOWLEDGE — USE ONLY THESE:
+Ranks: {game_info['ranks']}
+Stats: {game_info['stats']}
+Mechanics: {game_info['mechanics']}
+Valid visuals: {game_info['visuals']}
+Proven content hooks: {game_info['content_hooks']}
+
+STRICT RULES:
+1. ONLY use ranks, stats, mechanics and visuals from the list above — never invent terms
+2. Show contrast or proof in first 2 seconds
+3. Hook must use ONE of: "Same player. Different result." / "X days changed everything" / "This shouldn't be possible" / "I tested this for X days"
+4. NEVER use: secret trick, hack, link in bio, something changed, I was struggling
+5. Every step needs ONE camera direction: fast zoom / cut to / text overlay / split screen / freeze frame
+6. Before/after comparison is mandatory
+7. CTA must be: "Comment your rank" or "Most players miss this"
+8. Post time between 7PM-9PM only
+9. All visuals must be from inside the game
+10. Do NOT use brackets in output — write real specific actions
+11. Keep each step to ONE simple action a beginner can film with a phone
+
+OUTPUT FORMAT — RETURN EXACTLY THIS — NO THINKING — NO EXTRA TEXT:
+
+PROBLEM:
+[one brutal sentence using {name}'s exact numbers]
+
+TITLE:
+[contrast title using real {game} ranks or stats — example: "Silver → Gold. Same player. 7 days."]
+
+HOOK:
+[exact words to say]
+[exact in-game visual using only valid visuals listed above]
+
+STEP 1:
+[camera direction + exact in-game action]
+
+STEP 2:
+[camera direction + exact in-game action]
+
+STEP 3:
+[camera direction + exact in-game action]
+
+STEP 4:
+[camera direction + exact in-game action]
+
+STEP 5:
+[camera direction + ending line + CTA]
+
+POST TIME:
+Platform: {platform}
+Time: [7PM-9PM]
+
+WHY IT WORKS:
+[one sentence explaining the psychology]
+
+AVOID:
+[two specific things]
+
+{feedback_text}
+"""
+    return call_groq(prompt)
+
+def score_post(name, post_idea, followers):
+    prompt = f"""
+You are a strict viral content analyst for gaming videos.
+Be direct. No generic feedback. No thinking tags.
+
+Creator: {name}
+Followers: {followers}
+Post idea: {post_idea}
+
+RETURN EXACTLY THIS FORMAT:
+
+HOOK SCORE: X/100
+SHAREABILITY: X/100
+TREND MATCH: X/100
+AUDIENCE FIT: X/100
+
+WEAKNESS: one specific line
+FIX: one exact action
+VERDICT: POST IT or DONT POST or FIX FIRST
+"""
+    return call_groq(prompt)
+
+# ---------------- PARSER ----------------
+
 def parse_sections(text):
     text = clean_response(text)
-    
     keys = [
         "PROBLEM", "TITLE", "HOOK",
         "STEP 1", "STEP 2", "STEP 3", "STEP 4", "STEP 5",
         "POST TIME", "WHY IT WORKS", "AVOID"
     ]
-    
     sections = {k: "" for k in keys}
     current = None
-    
+
     for line in text.split('\n'):
         line = line.strip()
         if not line:
             continue
         matched = False
         for key in keys:
-            pattern = key + ":"
-            if line.upper().startswith(pattern):
+            if line.upper().startswith(key + ":"):
                 current = key
-                content = line[len(pattern):].strip()
+                content = line[len(key)+1:].strip()
                 if content:
                     sections[key] = content
                 matched = True
@@ -69,127 +233,6 @@ def parse_sections(text):
                 sections[current] = line
 
     return sections
-
-# ---------------- AI FUNCTIONS ----------------
-
-def get_ai_suggestions(name, followers, engagement, game, platform, style, about, feedback=""):
-    feedback_text = f"\nUSER FEEDBACK: {feedback}\nGenerate a completely different idea that fixes this.\n" if feedback else ""
-
-    prompt = f"""
-You are a viral gaming content coach who has studied 10 million viral gaming videos.
-
-THIS CREATOR MAKES GAMING VIDEOS ABOUT {game}.
-Their content is ONLY about gameplay — kills, ranks, aim, strategies.
-NOT about social media growth or analytics.
-ALL visuals must come from INSIDE the game.
-
-CREATOR:
-Name: {name}
-Game: {game}
-Platform: {platform}
-Style: {style}
-About: {about}
-Followers: {followers}
-Engagement: {engagement}%
-
-YOUR JOB:
-Give ONE video idea that will get maximum views on {platform}.
-The idea must be simple enough for a beginner creator to film with just their phone.
-
-RULES:
-1. Show contrast or proof in the FIRST 2 seconds — never delay
-2. Hook must use ONE of: "This shouldn't be possible", "Same player. Different result.", "X days changed everything", "I tested this for X days"
-3. NEVER use: "secret trick", "hack", "link in bio", "something changed", "I was struggling"
-4. Every step must have a camera direction: fast zoom, cut to, text overlay, split screen, freeze frame
-5. Before/after comparison is MANDATORY
-6. CTA must be: "Comment your rank" or "Most players miss this" — never "follow for part 2"
-7. Time must be between 7PM and 9PM
-8. Do NOT show face, room, or real camera.
-9. ALL visuals must be from inside the game UI or gameplay.
-10. All visuals must be from inside {game} — scoreboard, rank screen, kill feed, gameplay footage
-11. NEVER suggest analytics graphs, engagement metrics, or social media tools as visuals
-12. Keep steps simple — one action per step
-13. Do NOT use brackets [] in your output — write real specific actions
-
-RETURN EXACTLY THIS FORMAT — NO EXTRA TEXT — NO THINKING — JUST THE OUTPUT:
-
-PROBLEM:
-one brutal sentence using exact follower count and engagement numbers
-
-TITLE:
-scroll stopping title using contrast like "X → Y same player"
-
-HOOK:
-
-Choose ONE hook style (do not repeat the same style as previous outputs):
-
-1. Mistake exposure → call out viewer mistake
-2. Skill shock → unbelievable moment
-3. Curiosity gap → incomplete info that forces watch
-4. Reverse psychology → tell viewer to stop doing something
-5. Challenge → dare viewer to try something
-6. Fast result → instant improvement claim
-
-Rules:
-- First line = exact words (max 8 words, punchy)
-- Second line = exact visual from inside the game
-- Visual must create curiosity WITHOUT explanation
-- Words must NOT repeat phrases like “same player” or “different result”
-- Avoid generic phrases like “watch this”, “you won’t believe”
-- Every hook must feel DIFFERENT from previous ones
-
-STEP 1:
-camera direction + exact action
-
-STEP 2:
-camera direction + exact action
-
-STEP 3:
-camera direction + exact action
-
-STEP 4:
-camera direction + exact action
-
-STEP 5:
-camera direction + exact ending line + CTA
-
-POST TIME:
-Platform: {platform}
-Time: between 7PM and 9PM
-
-WHY IT WORKS:
-one simple sentence
-
-AVOID:
-AVOID must be specific to THIS idea.
-Do NOT give generic advice like “don’t show face” or “avoid low quality”.
-Each point must describe a mistake that would directly reduce views or trust in THIS exact video.
-
-{feedback_text}
-"""
-    return call_groq(prompt)
-
-def score_post(name, post_idea, followers):
-    prompt = f"""
-You are a strict viral content analyst for gaming videos.
-Be direct. No generic feedback.
-
-Creator: {name}
-Followers: {followers}
-Post idea: {post_idea}
-
-RETURN EXACTLY THIS FORMAT — NO THINKING — JUST THE OUTPUT:
-
-HOOK SCORE: X/100
-SHAREABILITY: X/100
-TREND MATCH: X/100
-AUDIENCE FIT: X/100
-
-WEAKNESS: one specific line
-FIX: one exact action
-VERDICT: POST IT or DONT POST or FIX FIRST
-"""
-    return call_groq(prompt)
 
 # ---------------- UI ----------------
 
