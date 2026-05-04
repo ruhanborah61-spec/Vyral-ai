@@ -1,52 +1,62 @@
 import streamlit as st
 import requests
 import re
-import random
 
 # ---------------- API ----------------
-API_KEY = st.secrets.get("GROQ_API_KEY")
+API_KEY = st.secrets["GROQ_API_KEY"]
 
 if not API_KEY:
-    st.error("❌ Missing GROQ_API_KEY in Streamlit secrets")
+    st.error("Missing API Key")
     st.stop()
 
-# ---------------- GAME KNOWLEDGE (MULTI-GAME) ----------------
-GAME_KNOWLEDGE = {
+# ---------------- GAME LAYER ----------------
+GAME_LAYER = {
     "Valorant": {
-        "mechanics": "crosshair placement, whiffing, spray control, peeking, clutching",
-        "visuals": "buy phase, scoreboard, kill feed, minimap, site entry, defuse",
-        "situations": "1v1 clutch, toxic teammate, insta-lock duelist, eco round, whiff moments"
+        "situations": "whiffing easy shots, toxic teammate, insta-lock duelist, clutch 1v2, eco round panic",
+        "mechanics": "crosshair placement, spray control, peeking, utility misuse",
+        "visuals": "buy phase, spike plant, scoreboard, kill feed, 1v1 clutch"
     },
-    "BGMI": {
-        "mechanics": "recoil control, drop timing, zone rotation, grenade usage, close combat",
-        "visuals": "loot phase, red zone, zone shrink, squad push, death screen",
-        "situations": "hot drop, third party fight, last zone 1v2, prone campers"
-    },
+
     "CS2": {
-        "mechanics": "aim pre-fire, spray control, counter-strafe, site hold, flash timing",
-        "visuals": "bomb plant, defuse, scoreboard, smoke wall, entry frag",
-        "situations": "eco round upset, clutch defuse, rush B fail, A site hold"
+        "situations": "rush B fail, eco round win, smoke miss, A site retake chaos",
+        "mechanics": "recoil spray, crosshair placement, peek timing, grenade usage",
+        "visuals": "bomb plant, smoke walls, scoreboard, headshot kill feed"
+    },
+
+    "BGMI": {
+        "situations": "hot drop death, camping enemy, last zone panic, squad wipe",
+        "mechanics": "recoil control, loot rush, zone rotation, grenade spam",
+        "visuals": "airdrop, zone shrink, kill feed, prone camping fights"
+    },
+
+    "Free Fire": {
+        "situations": "gloo wall spam, rush fail, sniper miss, squad betrayal",
+        "mechanics": "movement spam, gloo wall placement, aim drag",
+        "visuals": "revive, gloo wall fights, fast kills, loot box"
+    },
+
+    "Minecraft": {
+        "situations": "lava fall, creeper explosion, diamond loss, bed destroyed",
+        "mechanics": "building fail, PvP knockback, mining risk",
+        "visuals": "bed break, crafting table, death screen"
+    },
+
+    "Bedwars": {
+        "situations": "bed destroyed instantly, final 1v1 loss, bridge fail",
+        "mechanics": "bridging, rushing, TNT attack, resource camping",
+        "visuals": "island fight, bed break, void fall"
     }
 }
 
-def get_game_info(game):
-    return GAME_KNOWLEDGE.get(game, GAME_KNOWLEDGE["Valorant"])
-
-# ---------------- VIRAL PATTERNS ----------------
-VIRAL_PATTERNS = {
-    "Meme & Comedy": "failure → chaos → blame → funny payoff",
-    "Teaching (tips & tricks)": "mistake → fix → instant improvement",
-    "Clutch moments & highlights": "pressure → survival → win moment",
-    "Rank up journey": "bad play → realization → improvement clip"
+# fallback
+DEFAULT_GAME = {
+    "situations": "mistake, clutch fail, teammate trolling",
+    "mechanics": "basic gameplay actions",
+    "visuals": "gameplay clips, scoreboard, kill feed"
 }
 
-HOOK_BANK = [
-    "Why you losing fights",
-    "This is a free kill",
-    "Stop doing this",
-    "He missed everything",
-    "Watch this mistake"
-]
+def get_game(game):
+    return GAME_LAYER.get(game, DEFAULT_GAME)
 
 # ---------------- API CALL ----------------
 def call_groq(prompt):
@@ -59,132 +69,101 @@ def call_groq(prompt):
     data = {
         "model": "qwen/qwen3-32b",
         "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.9
+        "temperature": 0.95
     }
 
-    r = requests.post(url, json=data, headers=headers)
+    res = requests.post(url, json=data, headers=headers)
 
-    if r.status_code != 200:
-        return f"API Error: {r.text}"
+    if res.status_code != 200:
+        return "API ERROR"
 
-    return r.json()["choices"][0]["message"]["content"]
+    return res.json()["choices"][0]["message"]["content"]
 
 def clean(text):
-    return re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
+    return re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
 
-# ---------------- PROMPT ENGINE (CORE FIX) ----------------
-def generate_idea(name, followers, engagement, game, style):
-    g = get_game_info(game)
+# ---------------- PROMPT ENGINE ----------------
+def generate_meme(game, idea):
 
-    pattern = VIRAL_PATTERNS.get(style, "gameplay mistake → reaction → result")
-    hook = random.choice(HOOK_BANK)
+    g = get_game(game)
 
     prompt = f"""
-You are NOT a storyteller.
+You are a VIRAL GAMING MEME SHORTS SCRIPT ENGINE.
 
-You are a PROFESSIONAL SHORTS GAMEPLAY EDITOR.
+You ONLY write short-form meme scripts for gameplay.
 
-You only describe RAW gameplay clips that can be recorded.
+⚠️ STRICT RULES:
+- No storytelling
+- No emotions
+- No cinematic language
+- Only real gameplay actions
+- Everything must be filmable
+- Fast pacing (15–25 sec Shorts)
 
-NO emotions. NO narration. NO cinematic writing.
-
-CREATOR:
-{name}
-Followers: {followers}
+GAME CONTEXT:
 Game: {game}
-Style: {style}
-Engagement: {engagement}%
-
-EDIT STYLE:
-{pattern}
-
-GAME DATA:
+Situations: {g['situations']}
 Mechanics: {g['mechanics']}
 Visuals: {g['visuals']}
-Situations: {g['situations']}
 
-RULES:
-- Only real gameplay actions
-- No imagination
-- No dialogue
-- No storytelling
-- Every line must be filmable
+IDEA:
+{idea}
+
+MEME STRUCTURE:
+relatable mistake → escalation → chaos → punchline
 
 OUTPUT FORMAT:
 
-🚀 BEST VIDEO IDEA
+🚀 TITLE:
+max 6 words
 
-🎬 TITLE:
-[short gameplay title]
+🔥 HOOK (0–2 sec):
+visual: gameplay moment only
+text: 2–5 words max
 
-🔥 HOOK (0–2 sec)
-VISUAL:
-[exact in-game frame]
-TEXT:
-[3–5 word hook]
+📋 EXECUTION:
 
-📋 EXECUTION
+0–5 sec:
+raw gameplay mistake or setup
 
-0–5 SEC:
-[raw gameplay action]
+5–12 sec:
+mistake gets worse / chaos increases
 
-TEXT:
-[short text]
+12–18 sec:
+peak failure or funny moment
 
-5–12 SEC:
-[next gameplay action]
-
-TEXT:
-[short text]
-
-12–18 SEC:
-[final gameplay action]
-
-FINAL 2 SEC:
-[result screen]
-
-TEXT:
-[punchline]
+💥 FINAL PAYOFF:
+funny ending or loss moment
 
 💡 WHY IT WORKS:
-[one line: mistake → fix → payoff]
+1 line only (simple psychology)
 
+❌ FORBIDDEN:
+- narration
+- emotions
+- storytelling words
+- fake reactions
 """
 
-    return clean(call_groq(prompt))
+    return call_groq(prompt)
 
 # ---------------- UI ----------------
-st.set_page_config(page_title="Vyral", page_icon="🎮")
+st.set_page_config(page_title="Vyral Meme Engine", page_icon="🎮")
 
-st.title("Vyral 🎮")
-st.write("Real gameplay viral idea generator")
+st.title("🎮 Vyral Meme Engine")
+st.write("Gaming meme script generator (Shorts-ready)")
 
-st.sidebar.header("Profile")
+game = st.selectbox("Game", list(GAME_LAYER.keys()))
+idea = st.text_input("Enter idea (e.g. whiff, clutch fail, toxic teammate)")
 
-name = st.sidebar.text_input("Name")
-followers = st.sidebar.number_input("Followers", min_value=0)
-likes = st.sidebar.number_input("Avg likes", min_value=0)
+btn = st.button("Generate Meme Script")
 
-game = st.sidebar.selectbox("Game", list(GAME_KNOWLEDGE.keys()))
-style = st.sidebar.selectbox("Style", [
-    "Meme & Comedy",
-    "Teaching (tips & tricks)",
-    "Clutch moments & highlights",
-    "Rank up journey"
-])
-
-analyze = st.sidebar.button("Generate")
-
-# ---------------- MAIN ----------------
-if analyze:
-    if followers == 0:
-        st.error("Add followers")
-    elif not name:
-        st.error("Add name")
+if btn:
+    if not idea:
+        st.error("Enter idea")
     else:
-        engagement = round((likes / followers) * 100, 2) if followers else 0
+        with st.spinner("Generating viral meme..."):
+            result = generate_meme(game, idea)
 
-        with st.spinner("Generating REAL viral idea..."):
-            idea = generate_idea(name, followers, engagement, game, style)
-
-        st.write(idea)
+        st.markdown("## 🚀 OUTPUT")
+        st.write(clean(result))
