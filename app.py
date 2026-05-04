@@ -15,7 +15,7 @@ def call_groq(prompt):
         "Content-Type": "application/json"
     }
     data = {
-        "model": "qwen-qwq-32b",
+        "model": "qwen/qwen3-32b",
         "messages": [{"role": "user", "content": prompt}]
     }
     response = requests.post(url, json=data, headers=headers)
