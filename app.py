@@ -142,6 +142,9 @@ MEME SCRIPT RULES:
 9. Pacing: fast cuts — each frame maximum 3 seconds
 10. NEVER invent fake UI, fake stats, or impossible actions
 11. NO thinking tags in output
+12. NEVER use face cam, reactions, or anything outside the game screen
+13. NEVER create UI elements that don't exist in the game
+14. Every frame must exist naturally during real gameplay — no custom setups
 
 MEME FORMATS — PICK ONE THAT FITS:
 - "Me vs the game" (player expectation vs reality)
