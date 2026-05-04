@@ -104,10 +104,12 @@ RULES:
 5. Before/after comparison is MANDATORY
 6. CTA must be: "Comment your rank" or "Most players miss this" — never "follow for part 2"
 7. Time must be between 7PM and 9PM
-8. All visuals must be from inside {game} — scoreboard, rank screen, kill feed, gameplay footage
-9. NEVER suggest analytics graphs, engagement metrics, or social media tools as visuals
-10. Keep steps simple — one action per step
-11. Do NOT use brackets [] in your output — write real specific actions
+8. Do NOT show face, room, or real camera.
+9. ALL visuals must be from inside the game UI or gameplay.
+10. All visuals must be from inside {game} — scoreboard, rank screen, kill feed, gameplay footage
+11. NEVER suggest analytics graphs, engagement metrics, or social media tools as visuals
+12. Keep steps simple — one action per step
+13. Do NOT use brackets [] in your output — write real specific actions
 
 RETURN EXACTLY THIS FORMAT — NO EXTRA TEXT — NO THINKING — JUST THE OUTPUT:
 
