@@ -88,85 +88,91 @@ def generate_meme(game, idea):
     g = get_game(game)
 
     prompt = f"""
-You are a STRICT GAME-SPECIFIC MEME SCRIPT ENGINE.
+You are a VIRAL SHORT-FORM RETENTION ENGINE.
 
-You generate viral Shorts scripts ONLY using REAL mechanics of the selected game.
+You do NOT write stories.
+You do NOT explain.
+You do NOT analyze.
 
-⚠️ CRITICAL RULE (MOST IMPORTANT):
-You MUST NEVER mix mechanics between games.
+You ONLY generate FAST CUT MEME GAMEPLAY SCRIPTS.
 
-Examples of FORBIDDEN LOGIC:
-- No "knife economy" in Bedwars ❌
-- No "spray bullets" in Minecraft ❌
-- No Valorant abilities in BGMI ❌
-- No guns in Minecraft ❌
-Each game is completely isolated.
+----------------------
 
------------------------
+⚠️ CORE RULE:
+Everything must feel like a 7–18 second edited clip with rapid cuts.
+
+No filler. No explanation. No storytelling.
+
+----------------------
 
 GAME: {game}
 IDEA: {idea}
 
------------------------
+GAME LIMITS (STRICT):
+Use ONLY these actions:
 
-VALID GAME RULES:
+- VISUALS: {g['visuals']}
+- SITUATIONS: {g['situations']}
+- MECHANICS: {g['mechanics']}
 
-IF Valorant:
-- only guns, abilities, spike, economy, aim, clutch, defuse
+DO NOT invent anything outside this.
 
-IF CS2:
-- guns, smokes, flash, bomb plant, recoil, eco rounds
+----------------------
 
-IF BGMI / Free Fire:
-- guns, grenades, zone, loot, revive, vehicles
+🔥 RETENTION ENGINE RULES:
 
-IF Minecraft:
-- blocks, mobs, creepers, mining, crafting, lava, falling
+- First 1 second MUST create confusion or embarrassment
+- Every 3–5 seconds MUST escalate tension
+- No calm moments allowed
+- No explanation sentences
+- Every line = visible gameplay action only
 
-IF Bedwars:
-- beds, bridging, swords, bows, void, rushing, TNT
+----------------------
 
------------------------
+MEME FLOW (MANDATORY):
 
-MEME STRUCTURE:
-mistake → escalation → chaos → failure → punchline
+HOOK → MISTAKE → ESCALATION → CHAOS → EMBARRASSMENT PAYOFF
 
------------------------
+----------------------
 
 OUTPUT FORMAT:
 
 🚀 TITLE:
-max 5 words, meme style
+max 4–5 words, ironic or funny
 
 🔥 HOOK (0–2 sec):
-VISUAL: ONLY real in-game action from correct game
-TEXT: 2–4 words max
+VISUAL: single frozen frame action
+TEXT: 2–4 words ONLY (shock or confusion)
 
-📋 EXECUTION:
+📋 EXECUTION (FAST CUT STYLE):
 
-0–5 sec:
-simple valid gameplay action only
+0–3 sec:
+single gameplay action (mistake begins)
 
-5–12 sec:
-mistake escalates using ONLY valid mechanics
+3–7 sec:
+mistake becomes obvious or worse
+
+7–12 sec:
+chaos escalation (enemy/team reacts ONLY if visible in game)
 
 12–18 sec:
-peak chaos or failure moment
+final fail or loss moment
 
 💥 FINAL PAYOFF:
-funny loss / fail / meme punchline only
+1 short meme line (failure punchline only)
 
 💡 WHY IT WORKS:
-1 line: relatable gaming mistake + escalation
+ONLY ONE LINE:
+“fast escalation + relatable mistake + instant payoff”
 
------------------------
+----------------------
 
-❌ STRICTLY FORBIDDEN:
-- mixing game mechanics
-- fake items or abilities
-- storytelling narration
-- emotions or analysis
+❌ HARD FORBIDDEN:
+- storytelling ("he tried", "he realized")
+- emotions ("panic", "sad", "frustrated")
 - cinematic language
+- explanations
+- analysis
 """
     return call_groq(prompt)
 
