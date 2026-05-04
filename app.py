@@ -105,12 +105,23 @@ IDEA: {idea}
 
 ABSOLUTE CORE RULES:
 
-1. ONLY describe visible screen actions
-2. NO storytelling (no “tries”, “plans”, “realizes”, “accidentally”)
-3. NO global awareness (no “all enemies”, “entire team” unless visible)
-4. NO cinematic writing
-5. NO emotions or commentary
-6. Each line = one screen moment ONLY
+1. EVERY LINE MUST BE A CAMERA FRAME DESCRIPTION, NOT A GAME EVENT.
+2. ONLY describe visible screen actions
+3. NO storytelling (no “tries”, “plans”, “realizes”, “accidentally”)
+4. NO global awareness (no “all enemies”, “entire team” unless visible)
+5. NO cinematic writing
+6. NO emotions or commentary
+7. NO “because”, “so”, “then he realizes”.
+8. Each line = one screen moment ONLY
+
+---------------------------
+
+FRAME RULE:
+
+Each line must answer:
+“What would a viewer see in a screen recording at this exact second?”
+
+If it cannot be recorded → REMOVE IT.
 
 ----------------------------
 
