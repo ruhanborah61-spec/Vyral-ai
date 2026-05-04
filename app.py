@@ -86,89 +86,91 @@ def clean(text):
 def generate_meme(game, idea):
 
     g = get_game(game)
-
     prompt = f"""
-You are a FRAME-BY-FRAME GAMEPLAY CAPTION SYSTEM.
+You are a STRICT VIRAL GAMEPLAY CAPTION ENGINE.
 
-You are NOT allowed to connect events logically.
+Your job is to turn an idea into a SHORT-FORM GAME MEME SCRIPT.
 
-You ONLY describe what happens in each frame independently.
+You do NOT tell stories.
+You do NOT analyze.
+You do NOT assume hidden information.
+You ONLY describe what is visible on screen like a gameplay recording.
 
-----------------------
+----------------------------
 
 GAME: {game}
 IDEA: {idea}
 
-----------------------
+----------------------------
 
-CRITICAL RULE:
+ABSOLUTE CORE RULES:
 
-Each time segment MUST be independent.
-NO cause-effect storytelling.
+1. ONLY describe visible screen actions
+2. NO storytelling (no “tries”, “plans”, “realizes”, “accidentally”)
+3. NO global awareness (no “all enemies”, “entire team” unless visible)
+4. NO cinematic writing
+5. NO emotions or commentary
+6. Each line = one screen moment ONLY
 
-Example of WRONG:
-"enemy destroys bridge so player falls"
+----------------------------
 
-Example of CORRECT:
-"bridge missing block"
-"player in void falling"
+VALID CONTENT ONLY:
+- player movement
+- shooting / hitting / missing
+- building / placing / breaking (game dependent)
+- UI elements (kill feed, HP, score, death screen)
+- visible enemies or objects
 
-----------------------
+----------------------------
 
-ONLY ALLOWED OUTPUT STYLE:
+MEME STRUCTURE (FAST CUT STYLE):
 
-- visible actions
-- visible game objects
-- visible results on screen
+HOOK → ACTION → MISTAKE → ESCALATION → RESULT
 
-NO:
-- explanation
-- reasoning
-- story flow
-- "because"
-- "so"
-- "therefore"
+Each segment MUST be visually observable.
 
-----------------------
+----------------------------
 
 OUTPUT FORMAT:
 
 🚀 TITLE:
-max 4 words, meme tone
+max 4–5 words, meme tone
 
-🔥 HOOK:
-VISUAL: single frame only
+🔥 HOOK (0–2 sec):
+VISUAL: one screen frame only
 TEXT: 2–4 words max
 
 📋 EXECUTION:
 
 0–3 sec:
-frame action ONLY
+only visible gameplay action
 
 3–7 sec:
-new frame action ONLY (no connection to previous line)
+next visible action (no explanation, no logic)
 
 7–12 sec:
-new frame action ONLY
+visible escalation on screen
 
 12–18 sec:
-final screen state ONLY
+final visible result screen (win/loss/death)
 
 💥 FINAL PAYOFF:
-short meme text (no explanation)
+short meme line (funny fail or outcome only)
 
 💡 WHY IT WORKS:
-ONLY:
-“fast cuts + visible mistakes + payoff”
+one line only:
+“fast visible actions + escalating mistake + payoff”
 
-----------------------
+----------------------------
 
-❌ FORBIDDEN:
-- cause-effect logic
-- storytelling
-- narration
-- cinematic phrasing
-- fake game mechanics
+SELF-CHECK (IMPORTANT BEFORE FINAL ANSWER):
+
+Before responding, verify:
+- Did I add anything not visible on screen? → REMOVE IT
+- Did I assume hidden info? → REMOVE IT
+- Did I explain instead of show? → REMOVE IT
+
+Return ONLY cleaned output.
 """
     return call_groq(prompt)
 
