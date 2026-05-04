@@ -3,7 +3,7 @@ import requests
 import re
 
 # ---------------- API ----------------
-API_KEY = st.secrets["GROQ_API_KEY"]
+API_KEY = st.secrets.get("GROQ_API_KEY")
 
 if not API_KEY:
     st.error("Missing API Key")
@@ -12,47 +12,46 @@ if not API_KEY:
 # ---------------- GAME LAYER ----------------
 GAME_LAYER = {
     "Valorant": {
-        "situations": "whiffing easy shots, toxic teammate, insta-lock duelist, clutch 1v2, eco round panic",
-        "mechanics": "crosshair placement, spray control, peeking, utility misuse",
-        "visuals": "buy phase, spike plant, scoreboard, kill feed, 1v1 clutch"
+        "situations": "whiffing shots, eco round panic, spike plant chaos, clutch pressure",
+        "mechanics": "aim, recoil, peeking, ability usage, crosshair placement",
+        "visuals": "kill feed, spike, scoreboard, HUD, death screen"
     },
 
     "CS2": {
-        "situations": "rush B fail, eco round win, smoke miss, A site retake chaos",
-        "mechanics": "recoil spray, crosshair placement, peek timing, grenade usage",
-        "visuals": "bomb plant, smoke walls, scoreboard, headshot kill feed"
+        "situations": "rush fail, smoke miss, eco round fight, retake chaos",
+        "mechanics": "spray control, grenades, peeking, timing",
+        "visuals": "bomb plant, smoke, kill feed, scoreboard"
     },
 
     "BGMI": {
-        "situations": "hot drop death, camping enemy, last zone panic, squad wipe",
-        "mechanics": "recoil control, loot rush, zone rotation, grenade spam",
-        "visuals": "airdrop, zone shrink, kill feed, prone camping fights"
+        "situations": "hot drop death, last zone panic, squad wipe",
+        "mechanics": "looting, recoil, rotation, grenade use",
+        "visuals": "map, zone, kill feed, airdrop"
     },
 
     "Free Fire": {
-        "situations": "gloo wall spam, rush fail, sniper miss, squad betrayal",
-        "mechanics": "movement spam, gloo wall placement, aim drag",
-        "visuals": "revive, gloo wall fights, fast kills, loot box"
+        "situations": "gloo wall spam, rush fail, sniper miss",
+        "mechanics": "movement, aim drag, wall placement",
+        "visuals": "gloo walls, kill feed, loot box"
     },
 
     "Minecraft": {
-        "situations": "lava fall, creeper explosion, diamond loss, bed destroyed",
-        "mechanics": "building fail, PvP knockback, mining risk",
-        "visuals": "bed break, crafting table, death screen"
+        "situations": "fall death, creeper explosion, bed lost",
+        "mechanics": "building, mining, PvP hit",
+        "visuals": "blocks, death screen, inventory"
     },
 
     "Bedwars": {
-        "situations": "bed destroyed instantly, final 1v1 loss, bridge fail",
-        "mechanics": "bridging, rushing, TNT attack, resource camping",
-        "visuals": "island fight, bed break, void fall"
+        "situations": "bed break, bridge fail, void fall",
+        "mechanics": "bridging, rushing, TNT, PvP",
+        "visuals": "islands, bed, void, scoreboard"
     }
 }
 
-# fallback
 DEFAULT_GAME = {
-    "situations": "mistake, clutch fail, teammate trolling",
+    "situations": "mistake, fight, fail moment",
     "mechanics": "basic gameplay actions",
-    "visuals": "gameplay clips, scoreboard, kill feed"
+    "visuals": "HUD, kill feed, gameplay screen"
 }
 
 def get_game(game):
@@ -69,7 +68,7 @@ def call_groq(prompt):
     data = {
         "model": "qwen/qwen3-32b",
         "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.95
+        "temperature": 0.9
     }
 
     res = requests.post(url, json=data, headers=headers)
@@ -82,19 +81,29 @@ def call_groq(prompt):
 def clean(text):
     return re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
 
+# ---------------- SIMULATOR VALIDATOR ----------------
+def simulator_check(prompt_text):
+    """
+    Lightweight rule filter before sending to model
+    """
+    banned = [
+        "all enemies", "entire team", "knows", "realizes",
+        "thinking", "feels", "story", "because"
+    ]
+    for b in banned:
+        if b in prompt_text.lower():
+            return False
+    return True
+
 # ---------------- PROMPT ENGINE ----------------
-def generate_meme(game, idea):
+def generate_meme(game, idea, simulator=False):
 
     g = get_game(game)
+
     prompt = f"""
-You are a STRICT VIRAL GAMEPLAY CAPTION ENGINE.
+You are a REAL-TIME GAMEPLAY FRAME CAPTION ENGINE.
 
-Your job is to turn an idea into a SHORT-FORM GAME MEME SCRIPT.
-
-You do NOT tell stories.
-You do NOT analyze.
-You do NOT assume hidden information.
-You ONLY describe what is visible on screen like a gameplay recording.
+You describe ONLY what appears on a screen recording.
 
 ----------------------------
 
@@ -105,94 +114,86 @@ IDEA: {idea}
 
 ABSOLUTE CORE RULES:
 
-1. EVERY LINE MUST BE A CAMERA FRAME DESCRIPTION, NOT A GAME EVENT.
-2. ONLY describe visible screen actions
-3. NO storytelling (no “tries”, “plans”, “realizes”, “accidentally”)
-4. NO global awareness (no “all enemies”, “entire team” unless visible)
-5. NO cinematic writing
-6. NO emotions or commentary
-7. NO “because”, “so”, “then he realizes”.
-8. Each line = one screen moment ONLY
-
----------------------------
-
-FRAME RULE:
-
-Each line must answer:
-“What would a viewer see in a screen recording at this exact second?”
-
-If it cannot be recorded → REMOVE IT.
+1. Every line must describe ONLY what is visible in a screen recording frame.
+2. No game events, only frame-level visuals (what camera shows at that instant).
+3. No storytelling language (no: tries, plans, realizes, accidentally, manages to).
+4. No invisible knowledge (no assumptions about enemies, teams, or intentions).
+5. No cinematic or narrative framing.
+6. No emotions, reactions, or commentary.
+7. No causal words (no: because, so, therefore, then he realizes).
+8. Do NOT invent UI, stats, mechanics, or objects that are not normally visible in-game.
+9. Each line = exactly one frame (one moment in time only).
 
 ----------------------------
 
-VALID CONTENT ONLY:
-- player movement
-- shooting / hitting / missing
-- building / placing / breaking (game dependent)
-- UI elements (kill feed, HP, score, death screen)
-- visible enemies or objects
+SIMULATOR MODE RULE:
+
+If simulator mode is ON:
+You must behave like a game engine viewer.
+You cannot assume anything outside camera view.
 
 ----------------------------
 
-MEME STRUCTURE (FAST CUT STYLE):
+VALID ACTIONS ONLY:
+- movement
+- shooting
+- missing
+- UI (kill feed, HUD, death screen)
+- visible enemies
+- visible objects
+
+----------------------------
+
+STRUCTURE:
 
 HOOK → ACTION → MISTAKE → ESCALATION → RESULT
-
-Each segment MUST be visually observable.
 
 ----------------------------
 
 OUTPUT FORMAT:
 
 🚀 TITLE:
-max 4–5 words, meme tone
+max 4 words
 
-🔥 HOOK (0–2 sec):
-VISUAL: one screen frame only
-TEXT: 2–4 words max
+🔥 HOOK:
+VISUAL: screen frame only
+TEXT: 2–4 words
 
 📋 EXECUTION:
 
 0–3 sec:
-only visible gameplay action
+frame action only
 
 3–7 sec:
-next visible action (no explanation, no logic)
+next frame action only
 
 7–12 sec:
-visible escalation on screen
+visible escalation only
 
 12–18 sec:
-final visible result screen (win/loss/death)
+final result screen only
 
 💥 FINAL PAYOFF:
-short meme line (funny fail or outcome only)
+meme line only
 
 💡 WHY IT WORKS:
-one line only:
-“fast visible actions + escalating mistake + payoff”
+fast frames + mistake + payoff
 
 ----------------------------
-
-SELF-CHECK (IMPORTANT BEFORE FINAL ANSWER):
-
-Before responding, verify:
-- Did I add anything not visible on screen? → REMOVE IT
-- Did I assume hidden info? → REMOVE IT
-- Did I explain instead of show? → REMOVE IT
-
-Return ONLY cleaned output.
 """
+
     return call_groq(prompt)
 
 # ---------------- UI ----------------
 st.set_page_config(page_title="Vyral Meme Engine", page_icon="🎮")
 
 st.title("🎮 Vyral Meme Engine")
-st.write("Gaming meme script generator (Shorts-ready)")
+st.write("Short-form gaming meme script generator")
 
 game = st.selectbox("Game", list(GAME_LAYER.keys()))
-idea = st.text_input("Enter idea (e.g. whiff, clutch fail, toxic teammate)")
+idea = st.text_input("Enter idea")
+
+simulator_mode = st.toggle("🧠 Simulator Mode (Strict Reality Filter)")
 
 btn = st.button("Generate Meme Script")
 
@@ -200,8 +201,12 @@ if btn:
     if not idea:
         st.error("Enter idea")
     else:
-        with st.spinner("Generating viral meme..."):
-            result = generate_meme(game, idea)
+        with st.spinner("Generating..."):
+
+            if simulator_mode and not simulator_check(idea):
+                st.error("Blocked by simulator: unrealistic idea detected")
+            else:
+                result = generate_meme(game, idea, simulator_mode)
 
         st.markdown("## 🚀 OUTPUT")
         st.write(clean(result))
