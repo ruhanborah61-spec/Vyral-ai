@@ -85,87 +85,83 @@ def get_ai_suggestions(name, followers, engagement, game, platform, style, about
     feedback_text = f"\nFix this: {feedback}" if feedback else ""
 
     prompt = f"""
-You are a RAW GAMING CLIP EDITOR for viral Shorts.
+You are a STRICT GAMEPLAY CLIP EDITOR.
 
-You DO NOT tell stories.
-You ONLY describe real gameplay edits.
+You are NOT a storyteller.
+You are NOT a coach.
+You are NOT a narrator.
+
+You ONLY describe RAW gameplay edits for Shorts.
+
+⚠️ HARD RULES (NON NEGOTIABLE):
+- NO emotions
+- NO cinematic language
+- NO storytelling words (like: clutch moment, intense, feels, chaotic)
+- NO imagination (no "enemy thinks", "player realizes")
+- ONLY what is visible on screen
+- ONLY mechanical gameplay actions
+- Every line must be recordable in-game
 
 CREATOR:
 {name}
-Followers: {followers}
-Engagement: {engagement}%
 Game: {game}
 Style: {style}
 
-CONTENT MODE:
-{pattern}
-
 GAME DATA:
 Mechanics: {game_info['mechanics']}
-Situations: {game_info['situations']}
 Visuals: {game_info['visuals']}
+Situations: {game_info['situations']}
 
-⚔️ EXECUTION RULES (VERY IMPORTANT):
-- No storytelling
-- No emotions
-- No cinematic narration
-- No "enemy confused", "player feels", "clutch moment"
-- ONLY describe screen actions
-- Every line must be filmable gameplay
-- Keep it messy, real, raw (like actual clips)
+OUTPUT FORMAT (STRICT STRUCTURE):
 
-🔥 HOOK RULES:
-- Max 5 words
-- Must sound like real player reaction
-- No formatting like [PAUSE], no caps spam
+🚀 BEST VIDEO IDEA
 
-OUTPUT FORMAT (STRICT):
+🎬 TITLE:
+[VERY SHORT gameplay title only]
 
-🚀 BEST VIDEO IDEA FOR YOU (HIGH VIRAL POTENTIAL)
+🔥 HOOK (0–2 sec)
+VISUAL:
+[ONLY raw gameplay frame description]
+TEXT:
+[2–5 word hook only]
 
-🎬 Title:
-[short punchy gaming title]
+📋 EXECUTION
 
-🔥 Hook (0–2 sec)
-Visual:
-[exact gameplay frame — raw]
+0–5 SEC:
+[ONLY player action in game, no storytelling]
 
-Text:
-[short hook line]
+TEXT:
+[short on-screen text]
 
-📋 Execution
+5–12 SEC:
+[next gameplay action ONLY]
 
-0–5 sec:
-[exact gameplay action only]
+TEXT:
+[short on-screen text]
 
-Text:
-[simple on-screen text]
+12–18 SEC:
+[final gameplay action ONLY]
 
-5–12 sec:
-[next gameplay action only]
+FINAL 2 SEC:
+[result screen ONLY]
 
-Text:
-[simple reaction text]
-
-12–18 sec:
-[last gameplay action]
-
-Final 2 sec (PAYOFF):
-[result clip only]
-
-Text:
+TEXT:
 [final punchline]
 
-💡 Why this works:
-[ONE simple reason: pain / relatable / improvement / chaos]
+💡 WHY THIS WORKS:
+[ONE line only: psychology like “mistake → correction → payoff”]
 
-❌ Avoid:
-- cinematic edits
-- fake emotions
-- over explanation
+❌ FORBIDDEN:
+- storytelling
+- cinematic descriptions
+- emotions
+- fake reactions
+- dialogue
+- narration
 
 {feedback_text}
 """
+
     return call_groq(prompt)
 # ---------------- SCORING ----------------
 def score_post(name, post_idea, followers):
