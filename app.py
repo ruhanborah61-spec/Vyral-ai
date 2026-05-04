@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import re
 
 # ---------------- API ----------------
 API_KEY = st.secrets.get("GROQ_API_KEY")
@@ -25,6 +26,49 @@ def call_groq(prompt):
     if not result:
         return "API returned empty response. Please try again."
     return result
+
+def clean_response(text):
+    # Remove <think>...</think> blocks completely
+    text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
+    return text.strip()
+
+def parse_sections(text):
+    text = clean_response(text)
+    
+    keys = [
+        "PROBLEM", "TITLE", "HOOK",
+        "STEP 1", "STEP 2", "STEP 3", "STEP 4", "STEP 5",
+        "POST TIME", "WHY IT WORKS", "AVOID"
+    ]
+    
+    sections = {k: "" for k in keys}
+    current = None
+    
+    for line in text.split('\n'):
+        line = line.strip()
+        if not line:
+            continue
+        matched = False
+        for key in keys:
+            pattern = key + ":"
+            if line.upper().startswith(pattern):
+                current = key
+                content = line[len(pattern):].strip()
+                if content:
+                    sections[key] = content
+                matched = True
+                break
+            elif line.upper() == key:
+                current = key
+                matched = True
+                break
+        if not matched and current:
+            if sections[current]:
+                sections[current] += "\n" + line
+            else:
+                sections[current] = line
+
+    return sections
 
 # ---------------- AI FUNCTIONS ----------------
 
@@ -63,43 +107,44 @@ RULES:
 8. All visuals must be from inside {game} — scoreboard, rank screen, kill feed, gameplay footage
 9. NEVER suggest analytics graphs, engagement metrics, or social media tools as visuals
 10. Keep steps simple — one action per step
+11. Do NOT use brackets [] in your output — write real specific actions
 
-RETURN EXACTLY THIS — NO EXTRA TEXT:
+RETURN EXACTLY THIS FORMAT — NO EXTRA TEXT — NO THINKING — JUST THE OUTPUT:
 
 PROBLEM:
-[Write one sentence using {name}'s exact numbers — be brutal and specific about what's holding them back]
+one brutal sentence using exact follower count and engagement numbers
 
 TITLE:
-[Write a scroll-stopping title using contrast — example: "Silver → Gold. Same player. 7 days."]
+scroll stopping title using contrast like "X → Y same player"
 
 HOOK:
-[Write exact words to say in first 2 seconds]
-[Write exact visual from inside the game — example: "Fast zoom on rank screen showing Silver"]
+exact words to say in first 2 seconds
+exact visual from inside the game
 
-STEP 1 (0-2 sec):
-[Camera direction + exact action — example: "Fast zoom on scoreboard showing 8 kills"]
+STEP 1:
+camera direction + exact action
 
-STEP 2 (2-5 sec):
-[Camera direction + exact action — example: "Cut to text overlay: Day 1 vs Day 7"]
+STEP 2:
+camera direction + exact action
 
-STEP 3 (5-10 sec):
-[Camera direction + exact action — example: "Cut to bad gameplay clip — missed shots"]
+STEP 3:
+camera direction + exact action
 
-STEP 4 (10-15 sec):
-[Camera direction + exact action — example: "Cut to improved gameplay clip — clean headshots"]
+STEP 4:
+camera direction + exact action
 
-STEP 5 (15-20 sec):
-[Camera direction + exact ending line + CTA]
+STEP 5:
+camera direction + exact ending line + CTA
 
 POST TIME:
 Platform: {platform}
-Time: [between 7PM-9PM]
+Time: between 7PM and 9PM
 
 WHY IT WORKS:
-[One simple sentence]
+one simple sentence
 
 AVOID:
-[Two specific things that would kill this video]
+two specific things that would kill this video
 
 {feedback_text}
 """
@@ -114,83 +159,18 @@ Creator: {name}
 Followers: {followers}
 Post idea: {post_idea}
 
-RETURN EXACTLY THIS:
+RETURN EXACTLY THIS FORMAT — NO THINKING — JUST THE OUTPUT:
 
 HOOK SCORE: X/100
 SHAREABILITY: X/100
 TREND MATCH: X/100
 AUDIENCE FIT: X/100
 
-WEAKNESS: [one specific line]
-FIX: [one exact action]
-VERDICT: POST IT ✅ or DON'T POST ❌ or FIX FIRST ⚠️
+WEAKNESS: one specific line
+FIX: one exact action
+VERDICT: POST IT or DONT POST or FIX FIRST
 """
     return call_groq(prompt)
-
-def parse_sections(text):
-    def parse_sections(text):
-    # Remove thinking tags if present
-     if "<think>" in text:
-        text = text.split("</think>")[-1].strip()
-    
-    sections = {
-        "PROBLEM": "",
-        "TITLE": "",
-        "HOOK": "",
-        "STEP 1": "",
-        "STEP 2": "",
-        "STEP 3": "",
-        "STEP 4": "",
-        "STEP 5": "",
-        "POST TIME": "",
-        "WHY IT WORKS": "",
-        "AVOID": ""
-    }
-    
-    current = None
-    lines = text.split('\n')
-    
-    for line in lines:
-        line = line.strip()
-        if not line:
-            continue
-        matched = False
-        for key in sections:
-            if line.upper().startswith(key + ":") or line.upper() == key + ":":
-                current = key
-                content = line[len(key)+1:].strip()
-                if content:
-                    sections[key] = content
-                matched = True
-                break
-        if not matched and current:
-            if sections[current]:
-                sections[current] += "\n" + line
-            else:
-                sections[current] = line
-    
-    return sections
-    current = None
-    lines = text.split('\n')
-    for line in lines:
-        line = line.strip()
-        if not line:
-            continue
-        matched = False
-        for key in sections:
-            if line.startswith(key + ":") or line == key + ":":
-                current = key
-                content = line[len(key)+1:].strip()
-                if content:
-                    sections[key] = content
-                matched = True
-                break
-        if not matched and current:
-            if sections[current]:
-                sections[current] += "\n" + line
-            else:
-                sections[current] = line
-    return sections
 
 # ---------------- UI ----------------
 
@@ -201,7 +181,6 @@ st.write("AI content coach for gaming creators")
 
 st.info("👋 Fill in your details in the sidebar and click **Analyze** to get your video strategy!")
 
-# SIDEBAR
 st.sidebar.header("Your Profile")
 
 name = st.sidebar.text_input("Your name")
@@ -256,7 +235,6 @@ if analyze:
                 name, followers, engagement,
                 game, platform, style, about
             )
-            st.write("RAW:", st.session_state.result)
 
 if "result" in st.session_state:
     engagement = st.session_state.engagement
@@ -338,19 +316,21 @@ if "result" in st.session_state:
                 name, followers, engagement,
                 game, platform, style, about, feedback
             )
+        st.rerun()
 
 if score_btn and post_idea:
     with st.spinner("Scoring your idea..."):
         score_result = score_post(name, post_idea, followers)
+    score_result = clean_response(score_result)
     st.divider()
     st.subheader("📊 Post Score Report")
     lines = score_result.split('\n')
     for line in lines:
-        if any(x in line for x in ['HOOK SCORE', 'SHAREABILITY', 'TREND MATCH', 'AUDIENCE FIT']):
+        if any(x in line.upper() for x in ['HOOK SCORE', 'SHAREABILITY', 'TREND MATCH', 'AUDIENCE FIT']):
             parts = line.split(':')
             if len(parts) == 2:
                 st.metric(parts[0].strip(), parts[1].strip())
-        elif 'VERDICT' in line:
+        elif 'VERDICT' in line.upper():
             st.subheader(line)
         elif line.strip():
             st.write(line)
