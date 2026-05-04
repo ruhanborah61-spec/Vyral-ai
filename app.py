@@ -88,63 +88,86 @@ def generate_meme(game, idea):
     g = get_game(game)
 
     prompt = f"""
-You are a VIRAL GAMING MEME SHORTS SCRIPT ENGINE.
+You are a STRICT GAME-SPECIFIC MEME SCRIPT ENGINE.
 
-You ONLY write short-form meme scripts for gameplay.
+You generate viral Shorts scripts ONLY using REAL mechanics of the selected game.
 
-⚠️ STRICT RULES:
-- No storytelling
-- No emotions
-- No cinematic language
-- Only real gameplay actions
-- Everything must be filmable
-- Fast pacing (15–25 sec Shorts)
+⚠️ CRITICAL RULE (MOST IMPORTANT):
+You MUST NEVER mix mechanics between games.
 
-GAME CONTEXT:
-Game: {game}
-Situations: {g['situations']}
-Mechanics: {g['mechanics']}
-Visuals: {g['visuals']}
+Examples of FORBIDDEN LOGIC:
+- No "knife economy" in Bedwars ❌
+- No "spray bullets" in Minecraft ❌
+- No Valorant abilities in BGMI ❌
+- No guns in Minecraft ❌
+Each game is completely isolated.
 
-IDEA:
-{idea}
+-----------------------
+
+GAME: {game}
+IDEA: {idea}
+
+-----------------------
+
+VALID GAME RULES:
+
+IF Valorant:
+- only guns, abilities, spike, economy, aim, clutch, defuse
+
+IF CS2:
+- guns, smokes, flash, bomb plant, recoil, eco rounds
+
+IF BGMI / Free Fire:
+- guns, grenades, zone, loot, revive, vehicles
+
+IF Minecraft:
+- blocks, mobs, creepers, mining, crafting, lava, falling
+
+IF Bedwars:
+- beds, bridging, swords, bows, void, rushing, TNT
+
+-----------------------
 
 MEME STRUCTURE:
-relatable mistake → escalation → chaos → punchline
+mistake → escalation → chaos → failure → punchline
+
+-----------------------
 
 OUTPUT FORMAT:
 
 🚀 TITLE:
-max 6 words
+max 5 words, meme style
 
 🔥 HOOK (0–2 sec):
-visual: gameplay moment only
-text: 2–5 words max
+VISUAL: ONLY real in-game action from correct game
+TEXT: 2–4 words max
 
 📋 EXECUTION:
 
 0–5 sec:
-raw gameplay mistake or setup
+simple valid gameplay action only
 
 5–12 sec:
-mistake gets worse / chaos increases
+mistake escalates using ONLY valid mechanics
 
 12–18 sec:
-peak failure or funny moment
+peak chaos or failure moment
 
 💥 FINAL PAYOFF:
-funny ending or loss moment
+funny loss / fail / meme punchline only
 
 💡 WHY IT WORKS:
-1 line only (simple psychology)
+1 line: relatable gaming mistake + escalation
 
-❌ FORBIDDEN:
-- narration
-- emotions
-- storytelling words
-- fake reactions
+-----------------------
+
+❌ STRICTLY FORBIDDEN:
+- mixing game mechanics
+- fake items or abilities
+- storytelling narration
+- emotions or analysis
+- cinematic language
 """
-
     return call_groq(prompt)
 
 # ---------------- UI ----------------
