@@ -88,91 +88,87 @@ def generate_meme(game, idea):
     g = get_game(game)
 
     prompt = f"""
-You are a VIRAL SHORT-FORM RETENTION ENGINE.
+You are a FRAME-BY-FRAME GAMEPLAY CAPTION SYSTEM.
 
-You do NOT write stories.
-You do NOT explain.
-You do NOT analyze.
+You are NOT allowed to connect events logically.
 
-You ONLY generate FAST CUT MEME GAMEPLAY SCRIPTS.
-
-----------------------
-
-⚠️ CORE RULE:
-Everything must feel like a 7–18 second edited clip with rapid cuts.
-
-No filler. No explanation. No storytelling.
+You ONLY describe what happens in each frame independently.
 
 ----------------------
 
 GAME: {game}
 IDEA: {idea}
 
-GAME LIMITS (STRICT):
-Use ONLY these actions:
+----------------------
 
-- VISUALS: {g['visuals']}
-- SITUATIONS: {g['situations']}
-- MECHANICS: {g['mechanics']}
+CRITICAL RULE:
 
-DO NOT invent anything outside this.
+Each time segment MUST be independent.
+NO cause-effect storytelling.
+
+Example of WRONG:
+"enemy destroys bridge so player falls"
+
+Example of CORRECT:
+"bridge missing block"
+"player in void falling"
 
 ----------------------
 
-🔥 RETENTION ENGINE RULES:
+ONLY ALLOWED OUTPUT STYLE:
 
-- First 1 second MUST create confusion or embarrassment
-- Every 3–5 seconds MUST escalate tension
-- No calm moments allowed
-- No explanation sentences
-- Every line = visible gameplay action only
+- visible actions
+- visible game objects
+- visible results on screen
 
-----------------------
-
-MEME FLOW (MANDATORY):
-
-HOOK → MISTAKE → ESCALATION → CHAOS → EMBARRASSMENT PAYOFF
+NO:
+- explanation
+- reasoning
+- story flow
+- "because"
+- "so"
+- "therefore"
 
 ----------------------
 
 OUTPUT FORMAT:
 
 🚀 TITLE:
-max 4–5 words, ironic or funny
+max 4 words, meme tone
 
-🔥 HOOK (0–2 sec):
-VISUAL: single frozen frame action
-TEXT: 2–4 words ONLY (shock or confusion)
+🔥 HOOK:
+VISUAL: single frame only
+TEXT: 2–4 words max
 
-📋 EXECUTION (FAST CUT STYLE):
+📋 EXECUTION:
 
 0–3 sec:
-single gameplay action (mistake begins)
+frame action ONLY
 
 3–7 sec:
-mistake becomes obvious or worse
+new frame action ONLY (no connection to previous line)
 
 7–12 sec:
-chaos escalation (enemy/team reacts ONLY if visible in game)
+new frame action ONLY
 
 12–18 sec:
-final fail or loss moment
+final screen state ONLY
 
 💥 FINAL PAYOFF:
-1 short meme line (failure punchline only)
+short meme text (no explanation)
 
 💡 WHY IT WORKS:
-ONLY ONE LINE:
-“fast escalation + relatable mistake + instant payoff”
+ONLY:
+“fast cuts + visible mistakes + payoff”
 
 ----------------------
 
-❌ HARD FORBIDDEN:
-- storytelling ("he tried", "he realized")
-- emotions ("panic", "sad", "frustrated")
-- cinematic language
-- explanations
-- analysis
+❌ FORBIDDEN:
+- cause-effect logic
+- storytelling
+- narration
+- cinematic phrasing
+- fake game mechanics
 """
     return call_groq(prompt)
 
