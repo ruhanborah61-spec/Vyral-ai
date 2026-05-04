@@ -128,6 +128,11 @@ VERDICT: POST IT ✅ or DON'T POST ❌ or FIX FIRST ⚠️
     return call_groq(prompt)
 
 def parse_sections(text):
+    def parse_sections(text):
+    # Remove thinking tags if present
+     if "<think>" in text:
+        text = text.split("</think>")[-1].strip()
+    
     sections = {
         "PROBLEM": "",
         "TITLE": "",
@@ -141,6 +146,30 @@ def parse_sections(text):
         "WHY IT WORKS": "",
         "AVOID": ""
     }
+    
+    current = None
+    lines = text.split('\n')
+    
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        matched = False
+        for key in sections:
+            if line.upper().startswith(key + ":") or line.upper() == key + ":":
+                current = key
+                content = line[len(key)+1:].strip()
+                if content:
+                    sections[key] = content
+                matched = True
+                break
+        if not matched and current:
+            if sections[current]:
+                sections[current] += "\n" + line
+            else:
+                sections[current] = line
+    
+    return sections
     current = None
     lines = text.split('\n')
     for line in lines:
