@@ -1,6 +1,8 @@
 import streamlit as st
 import requests
 import re
+import random
+from memes import MEME_DATABASE
 
 # ---------------- API ----------------
 API_KEY = st.secrets.get("GROQ_API_KEY")
@@ -16,61 +18,67 @@ GAME_DATA = {
         "ranks": ["Iron 1-3", "Bronze 1-3", "Silver 1-3", "Gold 1-3", "Platinum 1-3", "Diamond 1-3", "Ascendant 1-3", "Immortal 1-3", "Radiant"],
         "screen_elements": ["scoreboard", "kill feed", "crosshair", "minimap", "rank screen", "death screen", "spike timer", "round timer", "ACS", "headshot %"],
         "relatable_situations": [
-            "missing an easy shot", "dying to a Silver player", "teammates not rotating",
-            "spike planted wrong site", "running out of credits", "getting one-tapped",
-            "losing a 1v1 you should win", "trolling teammate", "losing streak", "clutching and losing next round"
-        ],
-        "meme_reactions": ["facepalm", "disbelief", "rage quit moment", "unexpected win", "carried by teammate"]
+            "missing an easy shot", "dying to a lower rank player",
+            "teammates not rotating", "spike planted wrong site",
+            "running out of credits", "getting one-tapped",
+            "losing a 1v1 you should win", "bottom fragger asking for op",
+            "carrying the spike alone", "freezing in a 1v3"
+        ]
     },
     "BGMI": {
         "ranks": ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Crown", "Ace", "Conqueror"],
         "screen_elements": ["kill feed", "damage numbers", "zone map", "health bar", "boost bar", "rank screen", "death screen", "inventory"],
         "relatable_situations": [
-            "dying in final zone", "getting thirsted after knock", "looting the whole game and dying early",
-            "teammate stealing kill", "missing a shot at close range", "vehicle exploding",
-            "running out of ammo in fight", "getting hit by pan", "dying to zone"
-        ],
-        "meme_reactions": ["rage moment", "disbelief", "unexpected third party", "clutch fail", "lucky win"]
+            "dying in final zone", "getting thirsted after knock",
+            "looting whole game and dying early", "teammate stealing kill",
+            "missing shot at close range", "vehicle exploding",
+            "running out of ammo in fight", "ignoring recall and dying solo",
+            "squad driving and finding prone enemy", "dying to zone"
+        ]
     },
     "Free Fire": {
         "ranks": ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Heroic", "Grandmaster"],
         "screen_elements": ["kill feed", "health bar", "gloo wall UI", "character skill icons", "rank screen", "zone timer", "death screen"],
         "relatable_situations": [
-            "gloo wall not working", "dying to gloo wall camper", "character skill failing",
-            "hot drop death", "teammate revive ignored", "missing shots at close range",
+            "gloo wall not working", "dying to gloo wall camper",
+            "character skill failing", "hot drop death",
+            "teammate revive ignored", "missing shots at close range",
             "dying to final zone", "getting knocked by random"
-        ],
-        "meme_reactions": ["disbelief", "rage", "clutch moment fail", "lucky escape", "unexpected death"]
+        ]
     },
     "Minecraft": {
         "ranks": ["Day 1", "Day 10", "Day 100"],
         "screen_elements": ["health hearts", "hunger bar", "hotbar", "inventory", "XP bar", "death screen", "coordinates", "crafting table UI"],
         "relatable_situations": [
-            "dying to creeper", "falling into lava", "losing diamonds", "skeleton shooting from dark",
-            "forgetting to eat", "dying on day 99 of 100 days", "getting lost in caves",
-            "bed not set", "respawning far from base"
-        ],
-        "meme_reactions": ["screaming internally", "everything is fine then dies", "unexpected creeper", "clutch escape"]
+            "dying to creeper", "falling into lava",
+            "losing diamonds", "skeleton shooting from dark",
+            "forgetting to eat", "dying on day 99 of 100 days",
+            "getting lost in caves", "bed not set", "respawning far from base"
+        ]
     },
     "Bedwars": {
         "ranks": ["Iron", "Gold", "Diamond", "Emerald", "Sapphire", "Ruby", "Crystal", "Opal", "Amethyst", "Mirror"],
         "screen_elements": ["scoreboard", "bed status icons", "resource counter", "kill feed", "death screen", "win screen", "shop UI"],
         "relatable_situations": [
-            "bed broken while defending", "dying to void", "enemy rushing with fireball",
-            "forgetting to protect bed", "getting spawn killed", "running out of resources",
-            "teammate leaving mid game", "winning with 1 heart"
-        ],
-        "meme_reactions": ["betrayal feeling", "panic mode", "clutch win", "unexpected loss", "rage"]
+            "bed broken while defending", "dying to void",
+            "enemy rushing with fireball", "forgetting to protect bed",
+            "getting spawn killed", "running out of resources",
+            "teammate leaving mid game", "both players falling while bridging",
+            "peaceful defense interrupted by rusher", "winning with 1 heart"
+        ]
     },
     "CS2": {
         "ranks": ["Silver 1-4", "Silver Elite", "Gold Nova 1-4", "Master Guardian 1-2", "Legendary Eagle", "Supreme", "Global Elite"],
         "screen_elements": ["scoreboard", "kill feed", "crosshair", "radar", "money display", "health bar", "rank screen", "death cam"],
         "relatable_situations": [
-            "missing a shot at point blank", "buying wrong weapon", "teammate blocking shot",
-            "falling off ledge", "bomb timer panic", "running out of bullets in fight",
-            "getting headshot through smoke", "losing pistol round", "eco round fail"
-        ],
-        "meme_reactions": ["disbelief", "teammate blame", "clutch choke", "unexpected win", "rank anxiety"]
+            "missing AWP shot because enemy walked under scope",
+            "enemy stuck to wall facing it",
+            "teammate sent as bait dies instantly",
+            "missing shot at point blank", "buying wrong weapon",
+            "teammate blocking shot", "falling off ledge",
+            "bomb timer panic", "running out of bullets in fight",
+            "losing pistol round"
+        ]
     }
 }
 
@@ -78,9 +86,64 @@ def get_game_data(game):
     return GAME_DATA.get(game, {
         "ranks": ["beginner", "intermediate", "advanced"],
         "screen_elements": ["scoreboard", "health bar", "kill feed"],
-        "relatable_situations": ["missing shots", "dying unexpectedly", "losing a close game"],
-        "meme_reactions": ["disbelief", "rage", "unexpected moment"]
+        "relatable_situations": ["missing shots", "dying unexpectedly", "losing a close game"]
     })
+
+# ---------------- TEMPLATE MATCHER ----------------
+
+def find_matching_template(game, situation):
+    """Find best matching template from database for this situation"""
+    templates = MEME_DATABASE.get(game, [])
+    if not templates:
+        return None
+
+    situation_lower = situation.lower()
+    
+    # Try to find exact or close match
+    for template in templates:
+        template_situation = template.get("situation", "").lower()
+        template_title = template.get("title", "").lower()
+        
+        # Check if any words overlap
+        situation_words = set(situation_lower.split())
+        template_words = set(template_situation.split() + template_title.split())
+        
+        if len(situation_words & template_words) >= 2:
+            return template
+    
+    # Return random template if no match found
+    return random.choice(templates) if templates else None
+
+def format_template(template, name, rank):
+    """Personalize template with creator details"""
+    result = f"""
+MEME TITLE:
+{template['title']}
+
+MEME TYPE:
+{template['format']}
+
+"""
+    for i, frame in enumerate(template['frames'], 1):
+        result += f"FRAME {i}:\n{frame}\n\n"
+
+    result += f"""MUSIC:
+{template.get('music', 'phonk or comedy music')}
+
+SOUND EFFECTS:
+{chr(10).join(template.get('sound_effects', []))}
+
+EDIT STYLE:
+{template.get('edit_style', 'fast cuts')}
+
+POST TIME:
+Platform: YouTube Shorts / Instagram Reels / TikTok
+Time: 8PM
+
+WHY IT WORKS:
+{template.get('why_viral', 'relatable gaming moment')}
+"""
+    return result
 
 # ---------------- API CALL ----------------
 
@@ -107,15 +170,38 @@ def clean_response(text):
     text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
     return text.strip()
 
-# ---------------- MEME PROMPT ----------------
+# ---------------- MEME GENERATOR ----------------
 
 def get_meme_script(name, game, rank, platform, situation, feedback=""):
+    """
+    V3 Architecture:
+    1. Check database first for proven template
+    2. If found → personalize and return
+    3. If not found → AI generates with strict rules
+    """
+    
+    # STEP 1: Check database for matching template
+    template = find_matching_template(game, situation)
+    
+    if template and not feedback:
+        # Use proven template — personalize it
+        return format_template(template, name, rank)
+    
+    # STEP 2: AI generates if no template found or feedback given
     gd = get_game_data(game)
-    feedback_text = f"\nUSER FEEDBACK: {feedback}\nGenerate a completely different meme idea.\n" if feedback else ""
+    feedback_text = f"\nUSER FEEDBACK: {feedback}\nGenerate completely different idea.\n" if feedback else ""
+
+    # Get example templates from database for this game
+    examples = MEME_DATABASE.get(game, [])
+    example_text = ""
+    if examples:
+        example_text = f"\nPROVEN VIRAL FORMATS FOR {game.upper()} — USE AS INSPIRATION:\n"
+        for ex in examples[:3]:
+            example_text += f"- {ex['title']}: {ex.get('why_viral', '')}\n"
 
     prompt = f"""
 You are a viral gaming meme script generator.
-You write short-form meme scripts that gamers can open OBS and record immediately.
+You write short-form meme scripts that gamers record with OBS immediately.
 
 CREATOR:
 Name: {name}
@@ -127,76 +213,83 @@ Situation: {situation}
 VERIFIED {game.upper()} ELEMENTS — USE ONLY THESE:
 Ranks: {', '.join(gd['ranks'])}
 Real screen elements: {', '.join(gd['screen_elements'])}
-Relatable situations: {', '.join(gd['relatable_situations'])}
-Meme reactions: {', '.join(gd['meme_reactions'])}
+Real situations: {', '.join(gd['relatable_situations'])}
 
-MEME SCRIPT RULES:
+{example_text}
+
+STRICT RULES:
 1. Every frame = one visible screen moment only
-2. Zero storytelling, zero narration, zero emotions described
+2. Zero storytelling, zero narration, zero emotions
 3. Only describe what is VISIBLE on screen
-4. Maximum 6 frames total
-5. Each frame must be recordable from real gameplay
-6. Text overlays must be short — maximum 5 words
+4. Maximum 6 frames
+5. Each frame recordable from real gameplay
+6. Text overlays maximum 5 words
 7. Use only real screen elements listed above
-8. Meme must be relatable to ANY player at {rank} rank
-9. Pacing: fast cuts — each frame maximum 3 seconds
-10. NEVER invent fake UI, fake stats, or impossible actions
-11. NO thinking tags in output
-12. NEVER use face cam, reactions, or anything outside the game screen
-13. NEVER create UI elements that don't exist in the game
-14. Every frame must exist naturally during real gameplay — no custom setups
+8. Fast cuts — each frame maximum 3 seconds
+9. NEVER invent fake UI, fake stats, impossible actions
+10. NEVER use face cam or anything outside game screen
+11. No thinking tags in output
+12. Use realistic stat ranges only
 
-MEME FORMATS — PICK ONE THAT FITS:
-- "Me vs the game" (player expectation vs reality)
-- "Every [rank] player ever" (relatable rank behavior)
-- "POV: [situation]" (point of view meme)
-- "When [thing happens]" (reaction meme)
-- "Day X of [challenge]" (progress meme)
+MEME FORMATS — PICK ONE:
+- POV: [situation]
+- When [thing happens]
+- Every [rank] player ever
+- Me vs the game
 
-OUTPUT FORMAT — RETURN EXACTLY THIS — NO EXTRA TEXT:
+RETURN EXACTLY THIS — NO EXTRA TEXT:
 
 MEME TITLE:
-one punchy meme title using the format above
+one punchy title
 
 MEME TYPE:
-which format you picked and why in one line
+format picked and why in one line
 
 FRAME 1:
-exact screen element visible + text overlay if needed
+screen element + text overlay
 
 FRAME 2:
-exact screen element visible + text overlay if needed
+screen element + text overlay
 
 FRAME 3:
-exact screen element visible + text overlay if needed
+screen element + text overlay
 
 FRAME 4:
-exact screen element visible + text overlay if needed
+screen element + text overlay
 
 FRAME 5:
-exact screen element visible + text overlay if needed
+screen element + text overlay
 
 FRAME 6:
-exact screen element visible + final text overlay + CTA
+screen element + final text + CTA
+
+MUSIC:
+exact music style and when it changes
+
+SOUND EFFECTS:
+key sound effects per frame
+
+EDIT STYLE:
+exact cut timing and effects
 
 POST TIME:
 Platform: {platform}
-Time: between 7PM and 9PM
+Time: 8PM
 
 WHY IT WORKS:
-one sentence — what makes this relatable
+one sentence
 
 {feedback_text}
 """
     return call_groq(prompt)
 
-def score_post(name, post_idea, game):
+def score_meme(name, meme_idea, game):
     prompt = f"""
 You are a strict viral gaming meme analyst. No thinking tags. Direct output only.
 
 Creator: {name}
 Game: {game}
-Meme idea: {post_idea}
+Meme idea: {meme_idea}
 
 RETURN EXACTLY THIS:
 
@@ -219,6 +312,7 @@ def parse_sections(text):
         "MEME TITLE", "MEME TYPE",
         "FRAME 1", "FRAME 2", "FRAME 3",
         "FRAME 4", "FRAME 5", "FRAME 6",
+        "MUSIC", "SOUND EFFECTS", "EDIT STYLE",
         "POST TIME", "WHY IT WORKS"
     ]
     sections = {k: "" for k in keys}
@@ -256,8 +350,9 @@ st.set_page_config(page_title="Vyral", page_icon="🎮")
 st.title("Vyral 🎮")
 st.write("Gaming meme script generator — open OBS and record")
 
-st.info("👋 Fill in your details and get a ready-to-record meme script in seconds!")
+st.info("👋 Pick your game and situation — get a ready-to-record meme script instantly!")
 
+# SIDEBAR
 st.sidebar.header("Your Profile")
 
 name = st.sidebar.text_input("Your name")
@@ -294,6 +389,17 @@ if generate:
     else:
         st.session_state.name = name
         st.session_state.game = game
+        st.session_state.rank = rank
+        st.session_state.platform = platform
+        st.session_state.situation = situation
+
+        # Check if using database template
+        template = find_matching_template(game, situation)
+        if template:
+            st.session_state.source = "database"
+        else:
+            st.session_state.source = "ai"
+
         with st.spinner("Generating your meme script..."):
             st.session_state.result = get_meme_script(
                 name, game, rank, platform, situation
@@ -301,6 +407,12 @@ if generate:
 
 if "result" in st.session_state:
     sections = parse_sections(st.session_state.result)
+
+    # Show source badge
+    if st.session_state.get("source") == "database":
+        st.success("✅ From proven viral template database")
+    else:
+        st.info("🤖 AI generated script")
 
     st.divider()
 
@@ -318,6 +430,18 @@ if "result" in st.session_state:
             frame = sections[f"FRAME {i}"]
             if frame:
                 st.markdown(f"**Frame {i}:** {frame}")
+
+    if sections["MUSIC"]:
+        st.subheader("🎵 Music")
+        st.write(sections["MUSIC"])
+
+    if sections["SOUND EFFECTS"]:
+        st.subheader("🔊 Sound Effects")
+        st.write(sections["SOUND EFFECTS"])
+
+    if sections["EDIT STYLE"]:
+        st.subheader("✂️ Edit Style")
+        st.write(sections["EDIT STYLE"])
 
     if sections["POST TIME"]:
         st.subheader("🕐 When to Post")
@@ -339,13 +463,17 @@ if "result" in st.session_state:
             st.session_state.result = get_meme_script(
                 st.session_state.name,
                 st.session_state.game,
-                rank, platform, situation, feedback
+                st.session_state.rank,
+                st.session_state.platform,
+                st.session_state.situation,
+                feedback
             )
+            st.session_state.source = "ai"
         st.rerun()
 
 if score_btn and meme_idea:
-    with st.spinner("Scoring your meme idea..."):
-        score_result = score_post(
+    with st.spinner("Scoring your meme..."):
+        score_result = score_meme(
             st.session_state.get("name", "Creator"),
             meme_idea,
             st.session_state.get("game", "Valorant")
