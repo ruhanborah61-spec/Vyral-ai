@@ -9,6 +9,9 @@ MEME_DATABASE = {
             "title": "Welcome to peak rank gameplay",
             "situation": "Entire team gets 1-tapped instantly",
             "format": "POV",
+            "meme_archetype": "escalation",
+            "editing_difficulty": 2,
+            "viral_tags": ["instant_death", "rank_pain", "solo_queue", "fast_cuts"],
             "captions": [
                 "welcome to peak iron gameplay",
                 "3 taps",
@@ -32,6 +35,9 @@ MEME_DATABASE = {
             "title": "Nobody followed to A",
             "situation": "Player has spike, calls A, entire team goes B",
             "format": "POV: you called A",
+            "meme_archetype": "teammate_betrayal",
+            "editing_difficulty": 2,
+            "viral_tags": ["solo_queue_pain", "minimap_reveal", "spike_carrier", "betrayal"],
             "captions": [
                 "called A let's go",
                 "the team is right behind me",
@@ -58,6 +64,9 @@ MEME_DATABASE = {
             "title": "Where the fish are they going",
             "situation": "Teammates ignore spike carrier and go wrong site",
             "format": "POV: that one teammate",
+            "meme_archetype": "teammate_betrayal",
+            "editing_difficulty": 2,
+            "viral_tags": ["solo_queue_pain", "minimap_reveal", "spike_carrier", "desi_humor"],
             "captions": [
                 "pov: you have the spike",
                 "where the fish they going",
@@ -81,6 +90,9 @@ MEME_DATABASE = {
             "title": "See my Neon moves",
             "situation": "Creator activates Neon ultimate and instantly dies",
             "format": "When agent skill gets you killed",
+            "meme_archetype": "skill_issue",
+            "editing_difficulty": 2,
+            "viral_tags": ["instant_death", "agent_fail", "speed_ramp", "overconfidence"],
             "captions": [
                 "see my neon moves",
                 "bro thought he was him",
@@ -103,6 +115,9 @@ MEME_DATABASE = {
             "title": "Enemy looking at wall",
             "situation": "Enemy facing wall — creator misses free kill",
             "format": "POV: free kill",
+            "meme_archetype": "bait_switch",
+            "editing_difficulty": 2,
+            "viral_tags": ["missed_shot", "free_kill", "skill_issue", "no_caption_payoff"],
             "captions": [
                 "free kill incoming",
                 "easy",
@@ -126,6 +141,9 @@ MEME_DATABASE = {
             "title": "Bottom fragger asks for Operator",
             "situation": "0/8 teammate asks for expensive weapon",
             "format": "When teammate request",
+            "meme_archetype": "teammate_betrayal",
+            "editing_difficulty": 3,
+            "viral_tags": ["desi_humor", "indian_meme", "bottom_fragger", "operator_4700"],
             "captions": [
                 "my teammate this round",
                 "he said what",
@@ -135,7 +153,7 @@ MEME_DATABASE = {
                 "here's your operator bro 💀"
             ],
             "frames": [
-                "Scoreboard — teammate 0/8 KD, 12% headshot",
+                "Scoreboard — teammate 0/8 KD 12% headshot",
                 "Chat message — bro drop op pls",
                 "Creator credits showing 4700",
                 "Freeze frame on teammate scoreboard",
@@ -150,8 +168,11 @@ MEME_DATABASE = {
         {
             "id": "val_007",
             "title": "Never underestimate anyone",
-            "situation": "Creator gets one-tapped by Iron player",
+            "situation": "Creator gets one-tapped by lower rank player",
             "format": "POV: easy kill",
+            "meme_archetype": "bait_switch",
+            "editing_difficulty": 2,
+            "viral_tags": ["rank_anxiety", "instant_death", "overconfidence", "skill_issue"],
             "captions": [
                 "easy kill incoming",
                 "he's iron bro",
@@ -159,22 +180,25 @@ MEME_DATABASE = {
                 "never underestimate anyone 💀"
             ],
             "frames": [
-                "Scoreboard — enemy Iron player visible",
+                "Scoreboard — enemy lower rank visible",
                 "Creator peeks confidently",
                 "Gets instantly one-tapped",
-                "Death cam — Iron player had perfect crosshair",
+                "Death cam — enemy had perfect crosshair",
                 "Text: never underestimate anyone 💀"
             ],
             "music": "Confident music — cuts to phonk on death",
             "sound_effects": ["vine boom on death", "dramatic sting on death cam"],
             "edit_style": "Normal speed peek — instant freeze on death — slow mo death cam",
-            "why_viral": "Rank anxiety is universal — Iron surprising Gold is peak comedy"
+            "why_viral": "Rank anxiety is universal — lower rank surprising you is peak comedy"
         },
         {
             "id": "val_008",
             "title": "Last alive 1v3 freeze",
             "situation": "Creator freezes doing nothing in 1v3",
             "format": "POV: last alive",
+            "meme_archetype": "skill_issue",
+            "editing_difficulty": 2,
+            "viral_tags": ["solo_queue_pain", "freeze_frame", "mental_boom", "clutch_fail"],
             "captions": [
                 "POV: last alive 1v3",
                 "think think think",
@@ -198,8 +222,11 @@ MEME_DATABASE = {
         {
             "id": "cs2_001",
             "title": "I hate bees",
-            "situation": "Missing sniper shot because enemy walks under scope",
+            "situation": "Missing AWP shot because enemy walks under scope",
             "format": "When thing ruins your shot",
+            "meme_archetype": "skill_issue",
+            "editing_difficulty": 3,
+            "viral_tags": ["desi_humor", "indian_meme", "makkhi", "sniper_fail", "no_caption_start"],
             "captions": [
                 "I hate bees",
                 "the makkhi diff",
@@ -208,7 +235,7 @@ MEME_DATABASE = {
             "frames": [
                 "Creator scoping AWP — enemy visible in distance",
                 "Enemy walks directly below scope",
-                "Indian meme popup — makkhi buzzing in front of scope bho bho bho",
+                "Indian meme popup — makkhi buzzing bho bho bho",
                 "Creator misses shot completely",
                 "Enemy one-taps creator",
                 "Death screen"
@@ -223,6 +250,9 @@ MEME_DATABASE = {
             "title": "POV: Wall Cleaner",
             "situation": "Enemy stuck to wall facing it — gets one-tapped",
             "format": "POV: what you witness",
+            "meme_archetype": "bait_switch",
+            "editing_difficulty": 1,
+            "viral_tags": ["no_caption", "free_kill", "visual_comedy", "one_tap", "action_is_hook"],
             "captions": [
                 "POV: wall cleaner"
             ],
@@ -234,16 +264,19 @@ MEME_DATABASE = {
                 "Clean one-tap — kill feed shows it",
                 "Kill feed — enemy dead"
             ],
-            "music": "Sneaky music → silence on wall cleaner reveal → comedy music on popup → silence on kill",
+            "music": "Sneaky music → silence on wall cleaner reveal → comedy on popup → silence on kill",
             "sound_effects": ["squeaky cleaning sound on popup", "headshot sound emphasized"],
             "edit_style": "Slow sneak → freeze on wall cleaner → meme popup flash → instant kill cut",
-            "why_viral": "Zero text after frame 1 — visual does all the work — feels authentic not scripted"
+            "why_viral": "Zero text after frame 1 — visual does all the work — feels authentic"
         },
         {
             "id": "cs2_003",
             "title": "Sending bro as bait",
             "situation": "Teammate sacrificed to check area alone",
             "format": "POV: the bait",
+            "meme_archetype": "teammate_betrayal",
+            "editing_difficulty": 2,
+            "viral_tags": ["bait", "teammate_sacrifice", "info_gathering", "dark_humor"],
             "captions": [
                 "who's checking mid",
                 "bro got this",
@@ -273,6 +306,9 @@ MEME_DATABASE = {
             "title": "EH EH EHHHH",
             "situation": "Squad casually driving finds prone enemy and runs him over",
             "format": "No caption — pure visual and sound escalation",
+            "meme_archetype": "escalation",
+            "editing_difficulty": 3,
+            "viral_tags": ["no_caption", "freeze_frame", "sound_escalation", "vehicle_kill", "action_is_hook"],
             "captions": [],
             "frames": [
                 "Squad in car driving up hill casually",
@@ -284,12 +320,12 @@ MEME_DATABASE = {
             ],
             "music": "None — sound escalation IS the music",
             "sound_effects": [
-                "Eh 🔊 on freeze frame 1",
-                "Eh eh 🔊🔊 on freeze frame 2",
-                "EHHHHH EHHHHHH 🔊🔊🔊 on freeze frame 3",
+                "Eh on freeze frame 1",
+                "Eh eh on freeze frame 2",
+                "EHHHHH EHHHHHH on freeze frame 3",
                 "Complete silence after kill"
             ],
-            "edit_style": "Normal driving speed → sudden freeze → freeze → freeze → instant cut to kill feed",
+            "edit_style": "Normal driving → sudden freeze → freeze → freeze → instant cut to kill feed",
             "why_viral": "Zero text — freeze frame escalation with that sound is maximum comedy"
         },
         {
@@ -297,6 +333,9 @@ MEME_DATABASE = {
             "title": "IGL calling after solo fight death",
             "situation": "Ignored recall, took solo fight, died, IGL calls",
             "format": "Multi-slide reaction meme",
+            "meme_archetype": "teammate_betrayal",
+            "editing_difficulty": 5,
+            "viral_tags": ["desi_humor", "indian_meme", "oggy_jack", "biswa_audio", "igl_rage", "two_captions_only"],
             "captions": [
                 "me taking fight instead of recalling my team",
                 "my IGL calling me after that match"
@@ -305,14 +344,14 @@ MEME_DATABASE = {
                 "Squad pinging recall — creator ignores and takes fight",
                 "Meme popup — cat holding gun firing with BGMI map background",
                 "Peti shown — creator eliminated",
-                "Split screen — Jack receiving call hello on top, Oggy with IGL written furious on bottom"
+                "Split screen — Jack receiving call hello on top Oggy with IGL written furious on bottom"
             ],
             "music": "None — Oggy Jack theme on call screen",
             "sound_effects": [
                 "Cat firing sound",
                 "Peti sound on death",
                 "Phone ringing",
-                "Biswa Kalyan Rath audio — madarchod machod banchod biswa madani chod 🔊"
+                "Biswa Kalyan Rath audio — madarchod machod banchod biswa madani chod"
             ],
             "edit_style": "Normal gameplay → cat meme popup → peti cut → split screen slide transition",
             "why_viral": "Pure Indian gaming culture — Oggy Jack + Biswa audio = every Indian gamer's trauma"
@@ -325,6 +364,9 @@ MEME_DATABASE = {
             "title": "Me playing casually vs that one enemy",
             "situation": "Peaceful bed defense interrupted by rushing enemy",
             "format": "Me vs POV split",
+            "meme_archetype": "bait_switch",
+            "editing_difficulty": 2,
+            "viral_tags": ["casual_vs_tryhard", "speed_ramp", "bed_defense", "panic_mode"],
             "captions": [
                 "me playing bedwars casually",
                 "pov: that one enemy"
@@ -343,8 +385,11 @@ MEME_DATABASE = {
         {
             "id": "bed_002",
             "title": "Why are you so mad at me",
-            "situation": "Both teammates fall while bridging one after another",
+            "situation": "Both players fall while bridging one after another",
             "format": "No caption until end",
+            "meme_archetype": "escalation",
+            "editing_difficulty": 2,
+            "viral_tags": ["silence_before_payoff", "yoyaaa_sound", "bridging_fail", "void_death", "action_is_hook"],
             "captions": [
                 "bro why are u so mad at me",
                 "me ........."
@@ -361,9 +406,9 @@ MEME_DATABASE = {
             "sound_effects": [
                 "Silence after teammate falls",
                 "Silence after creator falls",
-                "YOYAAAA AYAYAYAYAYAAAAAAAAAYAYAYAAAAAAA 🔊 on meme popup"
+                "YOYAAAA AYAYAYAYAYAAAAAAAAAYAYAYAAAAAAA on meme popup"
             ],
-            "edit_style": "Normal bridge pace → fall → silence → fall → silence → EXPLOSION of sound on popup",
+            "edit_style": "Normal bridge → fall → silence → fall → silence → EXPLOSION of sound on popup",
             "why_viral": "Complete silence before YOYAAA is the setup — sound is the punchline"
         }
     ],
